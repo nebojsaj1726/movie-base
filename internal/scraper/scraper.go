@@ -3,12 +3,16 @@ package scraper
 import (
 	"fmt"
 	"log"
+	"math/rand"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/joho/godotenv"
 )
 
 type Movie struct {
@@ -20,21 +24,36 @@ type Movie struct {
 	Duration    string
 }
 
+func init() {
+    if err := godotenv.Load(); err != nil {
+        log.Fatalf("No .env file found")
+    }
+}
+
 func ScrapeMovies() ([]Movie, error) {
 	var movies []Movie
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var totalPages int
 
-	listCollector := colly.NewCollector()
-	pageCollector := colly.NewCollector()
+	baseURL, exists := os.LookupEnv("BASE_URL")
+	if !exists {
+		log.Fatalf("BASE_URL environment variable is not set")
+	}
 
+	listCollector := colly.NewCollector()
+	listCollector.SetRequestTimeout(30 * time.Second)
+
+	pageCollector := colly.NewCollector()
+	pageCollector.SetRequestTimeout(30 * time.Second)
+
+	errorCh := make(chan error, totalPages)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
-		listCollector.OnHTML(".pagination__right", func(e *colly.HTMLElement) {
+		pageCollector.OnHTML(".pagination__right", func(e *colly.HTMLElement) {
 			totalPagesStr := e.Text
 			re := regexp.MustCompile(`Page 1 of (\d+)`)
 			matches := re.FindStringSubmatch(totalPagesStr)
@@ -81,16 +100,16 @@ func ScrapeMovies() ([]Movie, error) {
 
 			err := overviewCollector.Visit(e.Request.AbsoluteURL(link))
 			if err != nil {
-				log.Printf("Error visiting page %s: %v\n", link, err)
+				errorCh <- fmt.Errorf("error visiting page %s: %v", link, err)
 				return
 			}	
 		})
 
-		listCollector.OnError(func(r *colly.Response, err error) {
+		pageCollector.OnError(func(r *colly.Response, err error) {
 			log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, r)
 		})
 
-		err := listCollector.Visit("https://www.lookmovie2.to/page/1?&r=5")
+		err := pageCollector.Visit(baseURL + "/page/1?&r=5")
 		if err != nil {
 			log.Printf("Error visiting page 1: %v\n", err)
 		}
@@ -98,17 +117,29 @@ func ScrapeMovies() ([]Movie, error) {
 
 	wg.Wait()
 	log.Printf("Total Pages: %d\n", totalPages)
-	for i := 1; i <= 1; i++ {
+
+	for i := 1; i <= totalPages; i++ {
 		wg.Add(1)
 		go func(page int) {
 			defer wg.Done()
 
-			err := pageCollector.Visit(fmt.Sprintf("https://www.lookmovie2.to/page/%d?&r=5", page))
+			err := listCollector.Visit(fmt.Sprintf(baseURL + "/page/%d?&r=5", page))
 			if err != nil {
 				log.Printf("Error visiting page %d: %v\n", page, err)
 			}
 		}(i)
+
+		time.Sleep(time.Duration(rand.Intn(2-1)+1) * time.Second)
 	}
+
+	go func() {
+        wg.Wait()
+        close(errorCh)
+    }()
+
+    for err := range errorCh {
+        log.Println(err)
+    }
 
 	wg.Wait()
 
