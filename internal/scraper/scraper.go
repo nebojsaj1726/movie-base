@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/joho/godotenv"
+	"github.com/nebojsaj1726/movie-base/config"
 )
 
 type Movie struct {
@@ -24,22 +23,18 @@ type Movie struct {
 	Duration    string
 }
 
-func init() {
-    if err := godotenv.Load(); err != nil {
-        log.Fatalf("No .env file found")
-    }
-}
-
 func ScrapeMovies() ([]Movie, error) {
 	var movies []Movie
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var totalPages int
 
-	baseURL, exists := os.LookupEnv("BASE_URL")
-	if !exists {
-		log.Fatalf("BASE_URL environment variable is not set")
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return nil, err
 	}
+
+	baseURL := cfg.BaseURL
 
 	listCollector := colly.NewCollector()
 	listCollector.SetRequestTimeout(30 * time.Second)
@@ -117,7 +112,6 @@ func ScrapeMovies() ([]Movie, error) {
 
 	wg.Wait()
 	log.Printf("Total Pages: %d\n", totalPages)
-
 	for i := 1; i <= totalPages; i++ {
 		wg.Add(1)
 		go func(page int) {
@@ -148,9 +142,17 @@ func ScrapeMovies() ([]Movie, error) {
 
 func extractGenres(e *colly.HTMLElement) []string {
 	var genres []string
+
 	e.ForEach(".genres span", func(_ int, el *colly.HTMLElement) {
 		genre := strings.TrimSpace(el.Text)
 		genres = append(genres, genre)
 	})
+	if len(genres) > 1 {
+		genres = genres[1:]
+	}
+	for i, genre := range genres {
+		genres[i] = strings.TrimPrefix(genre, ", ")
+	}
+
 	return genres
 }

@@ -1,34 +1,40 @@
 package main
 
 import (
-	// "encoding/json"
-	// "fmt"
 	"log"
 
+	"github.com/nebojsaj1726/movie-base/internal/database"
 	"github.com/nebojsaj1726/movie-base/internal/scraper"
 )
 
 func main() {
+	repo, err := database.NewRepository()
+	if err != nil {
+		log.Fatal("Error initializing the database repository:", err)
+	}
+	defer repo.Close()
+
 	movies, err := scraper.ScrapeMovies()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("Scraping completed. Total Movies: %d\n", len(movies))
+	var scraperMovies []scraper.Movie
+	for _, dbMovie := range movies {
+		scraperMovie := scraper.Movie{
+			Title:       dbMovie.Title,
+			Rate:        dbMovie.Rate,
+			Year:        dbMovie.Year,
+			Description: dbMovie.Description,
+			Genres:      dbMovie.Genres,
+			Duration:    dbMovie.Duration,
+		}
+		scraperMovies = append(scraperMovies, scraperMovie)
+	}
 
-	// for i, movie := range  {
-	// 	fmt.Printf("Movie %d:\n", i+1)
-	// 	fmt.Printf("Title: %s\n", movie.Title)
-	// 	fmt.Printf("Rate: %s\n", movie.Rate)
-	// 	fmt.Printf("Year: %s\n", movie.Year)
-	// 	fmt.Printf("Genres: %v\n", movie.Genres)
-	// 	fmt.Printf("Duration: %s\n", movie.Duration)
-	// 	fmt.Printf("Description: %s\n", movie.Description)
-	// 	fmt.Println("--------------------------")
-	// }
+    if err := repo.CreateMovies(scraperMovies); err != nil {
+		log.Fatalf("Error creating movies in the database: %v", err)
+	}
 
-	// moviesJSON, err := json.MarshalIndent(movies, "", " ")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+    log.Printf("Scraping and database insertion completed. Total Movies: %d\n", len(scraperMovies))
 }
