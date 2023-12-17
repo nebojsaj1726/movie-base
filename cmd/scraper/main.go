@@ -28,6 +28,7 @@ func main() {
 			Description: dbMovie.Description,
 			Genres:      dbMovie.Genres,
 			Duration:    dbMovie.Duration,
+			ImageURL:    dbMovie.ImageURL,
 		}
 		scraperMovies = append(scraperMovies, scraperMovie)
 	}

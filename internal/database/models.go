@@ -10,6 +10,7 @@ type Movie struct {
     Description string    `json:"description"`
     Genres      string    `json:"genres"`
     Duration    string    `json:"duration"`
+	ImageURL    string    `json:"image_url"`
     CreatedAt   time.Time `json:"created_at"`
     UpdatedAt   time.Time `json:"updated_at"`
 }

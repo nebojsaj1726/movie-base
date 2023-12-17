@@ -40,6 +40,7 @@ func (r *Repository) CreateMovies(movies []scraper.Movie) error {
 			Year:        movie.Year,
 			Description: movie.Description,
 			Duration:    movie.Duration,
+			ImageURL:    movie.ImageURL,
             Genres:      strings.Join(movie.Genres, ", "),
 		}
 

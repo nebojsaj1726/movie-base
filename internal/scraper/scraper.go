@@ -21,6 +21,7 @@ type Movie struct {
 	Description string
 	Genres      []string
 	Duration    string
+	ImageURL    string
 }
 
 func ScrapeMovies() ([]Movie, error) {
@@ -69,11 +70,14 @@ func ScrapeMovies() ([]Movie, error) {
 			rate := e.ChildText(".rate span")
 			year := e.ChildText(".year")
 			link := e.ChildAttr("a[href]", "href")
+			imageURL := e.ChildAttr("img.lozad", "data-src")
+
 
 			movie := Movie{
 				Title: title,
 				Rate: rate,
 				Year: year,
+				ImageURL: imageURL,
 			}
 
 			overviewCollector := colly.NewCollector()
@@ -112,7 +116,7 @@ func ScrapeMovies() ([]Movie, error) {
 
 	wg.Wait()
 	log.Printf("Total Pages: %d\n", totalPages)
-	for i := 1; i <= totalPages; i++ {
+	for i := 1; i <= 1; i++ {
 		wg.Add(1)
 		go func(page int) {
 			defer wg.Done()
