@@ -24,7 +24,7 @@ type Movie struct {
 	ImageURL    string
 }
 
-func ScrapeMovies() ([]Movie, error) {
+func ScrapeMedia(mediaType string) ([]Movie, error) {
 	var movies []Movie
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -36,6 +36,11 @@ func ScrapeMovies() ([]Movie, error) {
 	}
 
 	baseURL := cfg.BaseURL
+	var mediaPath string
+
+	if mediaType == "shows" {
+		mediaPath = "/shows/filter"
+	}
 
 	listCollector := colly.NewCollector()
 	listCollector.SetRequestTimeout(30 * time.Second)
@@ -108,20 +113,19 @@ func ScrapeMovies() ([]Movie, error) {
 			log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, r)
 		})
 
-		err := pageCollector.Visit(baseURL + "/page/1?&r=5")
+		err := pageCollector.Visit(baseURL + mediaPath + "/page/1?&r=5")
 		if err != nil {
 			log.Printf("Error visiting page 1: %v\n", err)
 		}
 	}()
 
 	wg.Wait()
-	log.Printf("Total Pages: %d\n", totalPages)
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= totalPages; i++ {
 		wg.Add(1)
 		go func(page int) {
 			defer wg.Done()
 
-			err := listCollector.Visit(fmt.Sprintf(baseURL + "/page/%d?&r=5", page))
+			err := listCollector.Visit(fmt.Sprintf(baseURL + mediaPath + "/page/%d?&r=5", page))
 			if err != nil {
 				log.Printf("Error visiting page %d: %v\n", page, err)
 			}

@@ -52,6 +52,26 @@ func (r *Repository) CreateMovies(movies []scraper.Movie) error {
 	return nil
 }
 
+func (r *Repository) CreateShows(shows []scraper.Movie) error {
+    for _, show := range shows {
+        newShow := Show{
+            Title:       show.Title,
+            Rate:        show.Rate,
+            Year:        show.Year,
+            Description: show.Description,
+            ImageURL:    show.ImageURL,
+            Genres:      strings.Join(show.Genres, ", "),
+        }
+
+        if err := r.DB.Create(&newShow).Error; err != nil {
+            return fmt.Errorf("error creating show %s: %v", show.Title, err)
+        }
+    }
+
+    return nil
+}
+
+
 func (r *Repository) Close() {
 	if err := r.DB.Close(); err != nil {
 		log.Println("Error closing the database connection:", err)
