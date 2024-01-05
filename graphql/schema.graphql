@@ -1,0 +1,16 @@
+type Movie {
+  id: ID!
+  title: String!
+  rate: String!
+  year: String!
+  description: String!
+  genres: String!
+  duration: String!
+  imageURL: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  searchMoviesByKeyword(keyword: String!): [Movie]!
+}

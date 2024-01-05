@@ -71,6 +71,16 @@ func (r *Repository) CreateShows(shows []scraper.Movie) error {
     return nil
 }
 
+func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, error) {
+	var movies []*Movie
+	if err := r.DB.Where("title ILIKE ?", "%"+keyword+"%").Limit(15).Find(&movies).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, fmt.Errorf("error searching movies by keyword: %v", err)
+		}
+	}
+	return movies, nil
+}
+
 
 func (r *Repository) Close() {
 	if err := r.DB.Close(); err != nil {
