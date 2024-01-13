@@ -10,7 +10,7 @@ import (
 	"github.com/nebojsaj1726/movie-base/internal/database/services"
 )
 
-type Resolver struct{
+type Resolver struct {
 	MovieService *services.MovieService
 }
 
@@ -23,6 +23,33 @@ func NewResolver(movieService *services.MovieService) *Resolver {
 // SearchMoviesByKeyword is the resolver for the searchMoviesByKeyword field.
 func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword string) ([]*Movie, error) {
 	dbMovies, err := r.MovieService.SearchMoviesByKeyword(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlMovies []*Movie
+	for _, dbMovie := range dbMovies {
+		gqlMovie := &Movie{
+			ID:          strconv.FormatUint(uint64(dbMovie.ID), 10),
+			Title:       dbMovie.Title,
+			Rate:        dbMovie.Rate,
+			Year:        dbMovie.Year,
+			Description: dbMovie.Description,
+			Genres:      dbMovie.Genres,
+			Duration:    dbMovie.Duration,
+			ImageURL:    dbMovie.ImageURL,
+			CreatedAt:   dbMovie.CreatedAt.Format(time.RFC3339),
+			UpdatedAt:   dbMovie.UpdatedAt.Format(time.RFC3339),
+		}
+		gqlMovies = append(gqlMovies, gqlMovie)
+	}
+
+	return gqlMovies, nil
+}
+
+// GetMovies is the resolver for the getMovies field.
+func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
+	dbMovies, err := r.MovieService.GetMovies(limit, offset, genreRange, year, rating)
 	if err != nil {
 		return nil, err
 	}

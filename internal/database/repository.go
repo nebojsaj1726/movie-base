@@ -41,7 +41,7 @@ func (r *Repository) CreateMovies(movies []scraper.Movie) error {
 			Description: movie.Description,
 			Duration:    movie.Duration,
 			ImageURL:    movie.ImageURL,
-            Genres:      strings.Join(movie.Genres, ", "),
+			Genres:      strings.Join(movie.Genres, ", "),
 		}
 
 		if err := r.DB.Create(&newMovie).Error; err != nil {
@@ -53,22 +53,22 @@ func (r *Repository) CreateMovies(movies []scraper.Movie) error {
 }
 
 func (r *Repository) CreateShows(shows []scraper.Movie) error {
-    for _, show := range shows {
-        newShow := Show{
-            Title:       show.Title,
-            Rate:        show.Rate,
-            Year:        show.Year,
-            Description: show.Description,
-            ImageURL:    show.ImageURL,
-            Genres:      strings.Join(show.Genres, ", "),
-        }
+	for _, show := range shows {
+		newShow := Show{
+			Title:       show.Title,
+			Rate:        show.Rate,
+			Year:        show.Year,
+			Description: show.Description,
+			ImageURL:    show.ImageURL,
+			Genres:      strings.Join(show.Genres, ", "),
+		}
 
-        if err := r.DB.Create(&newShow).Error; err != nil {
-            return fmt.Errorf("error creating show %s: %v", show.Title, err)
-        }
-    }
+		if err := r.DB.Create(&newShow).Error; err != nil {
+			return fmt.Errorf("error creating show %s: %v", show.Title, err)
+		}
+	}
 
-    return nil
+	return nil
 }
 
 func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, error) {
@@ -78,9 +78,31 @@ func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, error) {
 			return nil, fmt.Errorf("error searching movies by keyword: %v", err)
 		}
 	}
+
 	return movies, nil
 }
 
+func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
+	var movies []*Movie
+	query := r.DB.Limit(*limit).Offset(*offset)
+
+	if len(genreRange) > 0 {
+		query = query.Where("genres IN (?)", genreRange)
+	}
+	if year != nil {
+		query = query.Where("year = ?", *year)
+	}
+	if rating != nil {
+		query = query.Where("rate >= ?", *rating)
+	}
+	if err := query.Find(&movies).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, fmt.Errorf("error retrieving movies: %v", err)
+		}
+	}
+
+	return movies, nil
+}
 
 func (r *Repository) Close() {
 	if err := r.DB.Close(); err != nil {

@@ -15,3 +15,7 @@ func NewMovieService(repo *database.Repository) *MovieService {
 func (s *MovieService) SearchMoviesByKeyword(keyword string) ([]*database.Movie, error) {
 	return s.Repo.SearchMoviesByKeyword(keyword)
 }
+
+func (s *MovieService) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, error) {
+	return s.Repo.GetMovies(limit, offset, genreRange, year, rating)
+}

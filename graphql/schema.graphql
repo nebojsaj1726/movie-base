@@ -13,4 +13,11 @@ type Movie {
 
 type Query {
   searchMoviesByKeyword(keyword: String!): [Movie]!
+  getMovies(
+    limit: Int = 20
+    offset: Int = 0
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): [Movie]!
 }
