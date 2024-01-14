@@ -19,3 +19,11 @@ func (s *MovieService) SearchMoviesByKeyword(keyword string) ([]*database.Movie,
 func (s *MovieService) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, error) {
 	return s.Repo.GetMovies(limit, offset, genreRange, year, rating)
 }
+
+func (s *MovieService) GetMovieByID(id uint) (*database.Movie, error) {
+	return s.Repo.GetMovieByID(id)
+}
+
+func (s *MovieService) GetRandomMovies(count *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, error) {
+	return s.Repo.GetRandomMovies(count, genreRange, year, rating)
+}

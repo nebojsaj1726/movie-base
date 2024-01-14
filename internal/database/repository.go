@@ -26,7 +26,7 @@ func NewRepository() (*Repository, error) {
 		return nil, err
 	}
 
-	db.LogMode(false)
+	db.LogMode(true)
 
 	return &Repository{DB: db}, nil
 }
@@ -99,6 +99,38 @@ func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *in
 		if !gorm.IsRecordNotFoundError(err) {
 			return nil, fmt.Errorf("error retrieving movies: %v", err)
 		}
+	}
+
+	return movies, nil
+}
+
+func (r *Repository) GetMovieByID(id uint) (*Movie, error) {
+	var movie Movie
+	if err := r.DB.First(&movie, id).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, fmt.Errorf("error retrieving movie by ID: %v", err)
+		}
+		return nil, nil
+	}
+	return &movie, nil
+}
+
+func (r *Repository) GetRandomMovies(count *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
+	var movies []*Movie
+	query := r.DB
+
+	if len(genreRange) > 0 {
+		query = query.Where("genres IN (?)", genreRange)
+	}
+	if year != nil {
+		query = query.Where("year = ?", *year)
+	}
+	if rating != nil {
+		query = query.Where("rate >= ?", *rating)
+	}
+
+	if err := query.Order("RANDOM()").Limit(*count).Find(&movies).Error; err != nil {
+		return nil, fmt.Errorf("error retrieving random movies: %v", err)
 	}
 
 	return movies, nil

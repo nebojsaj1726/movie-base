@@ -20,4 +20,11 @@ type Query {
     year: Int
     rating: Float
   ): [Movie]!
+  getMovieById(id: String!): Movie
+  getRandomMovies(
+    count: Int = 1
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): [Movie]!
 }
