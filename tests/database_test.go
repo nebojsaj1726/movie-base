@@ -55,7 +55,6 @@ func setupTestDatabase(t *testing.T) (*database.Repository, *gorm.DB) {
 	db, err := gorm.Open("sqlite3", "file::memory:?cache=shared")
 	assert.Nil(t, err, "Error initializing the database for testing")
 
-
 	if err := db.AutoMigrate(&database.Movie{}).Error; err != nil {
 		assert.FailNow(t, "Error migrating movies table for testing")
 	}

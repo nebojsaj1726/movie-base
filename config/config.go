@@ -3,14 +3,16 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	DatabaseDSN string `mapstructure:"DB_DSN"`
-	BaseURL     string `mapstructure:"BASE_URL"`
-	ServerPort  int    `mapstructure:"SERVER_PORT"`
+	DatabaseDSN   string `mapstructure:"DB_DSN"`
+	BaseURL       string `mapstructure:"BASE_URL"`
+	ServerPort    int    `mapstructure:"SERVER_PORT"`
+	RedisAddr     string `mapstructure:"REDIS_ADDR"`
+	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
 }
 
 func LoadConfig() (*Config, error) {
 	viper.SetConfigFile(".env")
-	viper.AutomaticEnv() 
+	viper.AutomaticEnv()
 
 	var cfg Config
 
