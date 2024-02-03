@@ -100,3 +100,32 @@ func TestCreateShows(t *testing.T) {
 		assert.Equal(t, mockShow.Title, shows[i].Title, "Show title mismatch")
 	}
 }
+
+func TestGetMovieByID(t *testing.T) {
+	repo, db := setupTestDatabase(t)
+	defer db.Close()
+
+	err := repo.CreateMovies(mockMovies)
+	assert.Nil(t, err, "Error creating movies in the database for testing")
+
+	testMovieID := 1
+	result, err := repo.GetMovieByID(uint(testMovieID))
+
+	assert.Nil(t, err, "Error retrieving a movie by ID")
+	assert.NotNil(t, result, "Expected a movie to be retrieved")
+	assert.Equal(t, mockMovies[0].Title, result.Title, "Movie title mismatch")
+}
+
+func TestGetRandomMovies(t *testing.T) {
+	repo, db := setupTestDatabase(t)
+	defer db.Close()
+
+	err := repo.CreateMovies(mockMovies)
+	assert.Nil(t, err, "Error creating movies in the database for testing")
+
+	testCount := 2
+	result, err := repo.GetRandomMovies(&testCount, nil, nil, nil)
+
+	assert.Nil(t, err, "Error retrieving random movies")
+	assert.Len(t, result, testCount, "Number of retrieved movies doesn't match the expected count")
+}
