@@ -14,6 +14,11 @@ import (
 func NewRouter(resolver *gql.Resolver) http.Handler {
 	r := mux.NewRouter()
 
+	fs := http.FileServer(http.Dir("ui/dist"))
+	r.PathPrefix("/ui").Handler(http.StripPrefix("/ui", fs))
+	assetsFs := http.FileServer(http.Dir("ui/dist/assets"))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assetsFs))
+
 	gqlHandler := handler.New(gql.NewExecutableSchema(gql.Config{
 		Resolvers:  resolver,
 		Directives: gql.DirectiveRoot{},

@@ -13,10 +13,10 @@ import (
 )
 
 func main() {
-    cfg, err := config.LoadConfig()
-    if err != nil {
-        log.Fatalf("Error loading config: %v", err)
-    }
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
 
 	repo, err := database.NewRepository()
 	if err != nil {
@@ -27,11 +27,11 @@ func main() {
 
 	resolver := gql.NewResolver(movieService)
 
-    r := router.NewRouter(resolver)
+	r := router.NewRouter(resolver)
 
-    serverAddr := fmt.Sprintf(":%d", cfg.ServerPort)
-    log.Printf("Server is running on http://localhost%s", serverAddr)
-    if err := http.ListenAndServe(serverAddr, r); err != nil {
-        log.Fatalf("Error starting server: %v", err)
-    }
+	serverAddr := fmt.Sprintf(":%d", cfg.ServerPort)
+	log.Printf("Server is running on http://localhost%s", serverAddr)
+	if err := http.ListenAndServe(serverAddr, r); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
 }
