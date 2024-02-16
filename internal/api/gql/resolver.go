@@ -45,7 +45,6 @@ func dbMoviesToGraphQL(dbMovies []*database.Movie) []*Movie {
 	return gqlMovies
 }
 
-// SearchMoviesByKeyword is the resolver for the searchMoviesByKeyword field.
 func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword string) ([]*Movie, error) {
 	dbMovies, err := r.MovieService.SearchMoviesByKeyword(keyword)
 	if err != nil {
@@ -55,7 +54,6 @@ func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword strin
 	return dbMoviesToGraphQL(dbMovies), nil
 }
 
-// GetMovies is the resolver for the getMovies field.
 func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
 	dbMovies, err := r.MovieService.GetMovies(limit, offset, genreRange, year, rating)
 	if err != nil {
@@ -65,7 +63,6 @@ func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, 
 	return dbMoviesToGraphQL(dbMovies), nil
 }
 
-// GetMovieByID is the resolver for the getMovieByID field.
 func (r *queryResolver) GetMovieByID(ctx context.Context, id string) (*Movie, error) {
 	movieID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -89,7 +86,6 @@ func (r *queryResolver) GetRandomMovies(ctx context.Context, count *int, genreRa
 	return dbMoviesToGraphQL(dbMovies), nil
 }
 
-// Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

@@ -14,8 +14,7 @@ import (
 func NewRouter(resolver *gql.Resolver) http.Handler {
 	r := mux.NewRouter()
 
-	fs := http.FileServer(http.Dir("ui/dist"))
-	r.PathPrefix("/ui").Handler(http.StripPrefix("/ui", fs))
+	r.Handle("/", http.FileServer(http.Dir("ui/dist")))
 	assetsFs := http.FileServer(http.Dir("ui/dist/assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assetsFs))
 
