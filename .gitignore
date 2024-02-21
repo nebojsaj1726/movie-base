@@ -19,3 +19,7 @@ go.work
 
 # Ignore environment files
 *.env
+
+# Build output
+*/ui/dist/
+

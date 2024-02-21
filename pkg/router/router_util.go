@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
@@ -25,6 +26,7 @@ func NewRouter(resolver *gql.Resolver) http.Handler {
 	}))
 
 	gqlHandler.AddTransport(transport.POST{})
+	gqlHandler.Use(extension.Introspection{})
 
 	r.Handle("/playground", playground.Handler("GraphQL Playground", "/query"))
 	r.Handle("/query", gqlHandler)
