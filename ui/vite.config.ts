@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       hooks: path.join(__dirname, "./src/hooks"),
+      assets: path.join(__dirname, "./src/assets"),
     },
   },
 })
