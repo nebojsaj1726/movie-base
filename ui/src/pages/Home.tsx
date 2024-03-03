@@ -1,15 +1,11 @@
-import { useRandomMoviesQuery } from "hooks/useMovies"
 import { Link } from "react-router-dom"
 import logo from "assets/logo.svg"
+import { SearchBar } from "components/SearchBar"
 
 export const Home = () => {
-  const { data, isLoading, error } = useRandomMoviesQuery(10, ["Drama"])
-
-  console.log(data, isLoading, error)
-
   return (
     <div>
-      <header className="bg-dark-midnight text-gray-200 px-12 py-6 flex justify-between">
+      <header className="bg-dark-midnight text-gray-200 px-6 md:px-12 py-6 flex flex-col md:flex-row gap-6 justify-between md:text-lg">
         <div className="flex items-center space-x-3">
           <div>
             <Link to="/">
@@ -31,13 +27,7 @@ export const Home = () => {
             </ul>
           </nav>
         </div>
-        <div className="ml-6 flex-grow max-w-xl">
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-slate-light w-full text-gray-200 px-4 py-2 rounded focus:outline-none focus:bg-gray-700"
-          />
-        </div>
+        <SearchBar />
       </header>
       <div className="container mx-auto">
         <h1 className="text-3xl font-bold mt-8">Welcome to the Home Page</h1>

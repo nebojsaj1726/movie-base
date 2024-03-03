@@ -23,7 +23,9 @@
     "baseUrl": ".",
     "paths": {
       "hooks/*": ["./src/hooks/*"],
-      "assets/*": ["./src/assets/*"]
+      "assets/*": ["./src/assets/*"],
+      "components/*": ["./src/components/*"],
+      "types": ["./src/types"]
     }
   },
   "include": ["src"],

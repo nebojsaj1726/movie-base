@@ -9,6 +9,8 @@ export default defineConfig({
     alias: {
       hooks: path.join(__dirname, "./src/hooks"),
       assets: path.join(__dirname, "./src/assets"),
+      components: path.join(__dirname, "./src/components"),
+      types: path.join(__dirname, "./src/components"),
     },
   },
 })

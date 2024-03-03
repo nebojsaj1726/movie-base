@@ -4,17 +4,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query"
 import { gql, GraphQLClient } from "graphql-request"
-
-interface Movie {
-  id: string
-  title: string
-  rate: string
-  year: string
-  description: string
-  genres: string
-  duration: string
-  imageURL: string
-}
+import { Movie } from "types"
 
 const endpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT
 const client = new GraphQLClient(endpoint)
@@ -102,9 +92,8 @@ export const useSearchMoviesByKeywordQuery = (
           searchMoviesByKeyword(keyword: $keyword) {
             id
             title
-            rate
             year
-            description
+            genres
           }
         }
       `
