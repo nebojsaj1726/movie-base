@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom"
 import logo from "assets/logo.svg"
 import { SearchBar } from "components/SearchBar"
+import { useGetHomePageMovies } from "hooks/useMovies"
+import { MovieList } from "components/MovieList"
 
 export const Home = () => {
+  const { data, isLoading, error } = useGetHomePageMovies()
+
   return (
     <div>
       <header className="bg-dark-midnight text-gray-200 px-6 md:px-12 py-6 flex flex-col md:flex-row gap-6 justify-between md:text-lg">
@@ -29,9 +33,25 @@ export const Home = () => {
         </div>
         <SearchBar />
       </header>
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mt-8">Welcome to the Home Page</h1>
-        {/* Add your home page content here */}
+      <div className="bg-deep-blue pb-8">
+        <MovieList
+          title="Latest movies"
+          movies={data?.latestMovies}
+          isLoading={isLoading}
+          error={error}
+        />
+        <MovieList
+          title="Featured movies"
+          movies={data?.featuredMovies}
+          isLoading={isLoading}
+          error={error}
+        />
+        <MovieList
+          title="Movie of the day"
+          movies={data ? [data.movieOfTheDay] : []}
+          isLoading={isLoading}
+          error={error}
+        />
       </div>
     </div>
   )

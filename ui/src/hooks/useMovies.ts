@@ -2,25 +2,31 @@ import {
   useQuery,
   UseQueryResult,
   UseQueryOptions,
+  keepPreviousData,
 } from "@tanstack/react-query"
 import { gql, GraphQLClient } from "graphql-request"
-import { Movie } from "types"
+import { HomePageData, Movie } from "types"
 
 const endpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT
 const client = new GraphQLClient(endpoint)
 
-export const useRandomMoviesQuery = (
-  count: number = 1,
-  genre: string[] = [],
-  year?: number,
+export const useRandomMoviesQuery = ({
+  count,
+  genre,
+  year,
+  rating,
+}: {
+  count?: number
+  genre?: string[]
+  year?: number
   rating?: number
-): UseQueryResult<Movie[], Error> => {
+}): UseQueryResult<Movie[], Error> => {
   const options: UseQueryOptions<Movie[], Error> = {
     queryKey: ["randomMovies", count, genre, year, rating],
     queryFn: async () => {
       const query = gql`
         query GetRandomMovies(
-          $count: Int = 1
+          $count: Int
           $genre: [String!]
           $year: Int
           $rating: Float
@@ -103,6 +109,109 @@ export const useSearchMoviesByKeywordQuery = (
         { keyword }
       )
       return data.searchMoviesByKeyword
+    },
+    placeholderData: keepPreviousData,
+  }
+
+  return useQuery(options)
+}
+
+export const useGetMoviesQuery = (
+  limit?: number,
+  offset?: number,
+  genre?: string[],
+  year?: number,
+  rating?: number
+): UseQueryResult<Movie[], Error> => {
+  const options: UseQueryOptions<Movie[], Error> = {
+    queryKey: ["getMovies", limit, offset, genre, year, rating],
+    queryFn: async () => {
+      const query = gql`
+        query GetMovies(
+          $limit: Int
+          $offset: Int
+          $genre: [String!]
+          $year: Int
+          $rating: Float
+        ) {
+          getMovies(
+            limit: $limit
+            offset: $offset
+            genre: $genre
+            year: $year
+            rating: $rating
+          ) {
+            id
+            title
+            rate
+            year
+            description
+            genres
+            duration
+            imageURL
+          }
+        }
+      `
+
+      const data = await client.request<{ getMovies: Movie[] }>(query, {
+        limit,
+        offset,
+        genre,
+        year,
+        rating,
+      })
+      return data.getMovies
+    },
+  }
+
+  return useQuery(options)
+}
+
+export const useGetHomePageMovies = (): UseQueryResult<HomePageData, Error> => {
+  const options: UseQueryOptions<HomePageData, Error> = {
+    queryKey: ["getHomePageMovies"],
+    queryFn: async () => {
+      const query = gql`
+        query GetHomePageMovies {
+          getHomePageData {
+            latestMovies {
+              id
+              title
+              rate
+              year
+              description
+              genres
+              duration
+              imageURL
+            }
+            featuredMovies {
+              id
+              title
+              rate
+              year
+              description
+              genres
+              duration
+              imageURL
+            }
+            movieOfTheDay {
+              id
+              title
+              rate
+              year
+              description
+              genres
+              duration
+              imageURL
+            }
+          }
+        }
+      `
+
+      const data = await client.request<{ getHomePageData: HomePageData }>(
+        query
+      )
+      return data.getHomePageData
     },
   }
 

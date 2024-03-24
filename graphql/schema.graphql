@@ -11,6 +11,12 @@ type Movie {
   updatedAt: String!
 }
 
+type MoviesOverview {
+  latestMovies: [Movie]!
+  featuredMovies: [Movie]!
+  movieOfTheDay: Movie!
+}
+
 type Query {
   searchMoviesByKeyword(keyword: String!): [Movie]!
   getMovies(
@@ -27,4 +33,5 @@ type Query {
     year: Int
     rating: Float
   ): [Movie]!
+  getHomePageData: MoviesOverview!
 }

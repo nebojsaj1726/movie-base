@@ -8,3 +8,9 @@ export interface Movie {
   duration: string
   imageURL: string
 }
+
+export interface HomePageData {
+  latestMovies: Movie[]
+  featuredMovies: Movie[]
+  movieOfTheDay: Movie
+}

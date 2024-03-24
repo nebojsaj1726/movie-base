@@ -86,6 +86,29 @@ func (r *queryResolver) GetRandomMovies(ctx context.Context, count *int, genreRa
 	return dbMoviesToGraphQL(dbMovies), nil
 }
 
+func (r *queryResolver) GetHomePageData(ctx context.Context) (*MoviesOverview, error) {
+	latestMovies, err := r.MovieService.GetLatestMovies()
+	if err != nil {
+		return nil, err
+	}
+
+	featuredMovies, err := r.MovieService.GetFeaturedMovies()
+	if err != nil {
+		return nil, err
+	}
+
+	movieOfTheDay, err := r.MovieService.GetMovieOfTheDay()
+	if err != nil {
+		return nil, err
+	}
+
+	return &MoviesOverview{
+		LatestMovies:   dbMoviesToGraphQL(latestMovies),
+		FeaturedMovies: dbMoviesToGraphQL(featuredMovies),
+		MovieOfTheDay:  dbMovieToGraphQL(movieOfTheDay),
+	}, nil
+}
+
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

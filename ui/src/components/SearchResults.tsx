@@ -6,13 +6,14 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ searchInput }: SearchResultsProps) => {
-  const { data, isLoading, error } = useSearchMoviesByKeywordQuery(searchInput)
+  const { data, error } = useSearchMoviesByKeywordQuery(searchInput)
 
   return (
-    <div className="absolute z-0 mt-2 w-full">
-      <ul className="bg-gray-700 z-1 rounded-md">
-        {isLoading && <div className="p-4">Loading...</div>}
-        {error && <div className="p-4">Error: {error.message}</div>}
+    <div className="absolute z-10 mt-2 w-full">
+      <ul className="bg-gray-700 rounded-md">
+        {error && (
+          <div className="p-4 text-red-600">Error: {error.message}</div>
+        )}
         {data &&
           data.map((movie) => (
             <li key={movie.id} className="px-4 py-4 border-b border-gray-200">

@@ -15,5 +15,11 @@ type Movie struct {
 	UpdatedAt   string `json:"updatedAt"`
 }
 
+type MoviesOverview struct {
+	LatestMovies   []*Movie `json:"latestMovies"`
+	FeaturedMovies []*Movie `json:"featuredMovies"`
+	MovieOfTheDay  *Movie   `json:"movieOfTheDay"`
+}
+
 type Query struct {
 }
