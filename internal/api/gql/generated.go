@@ -45,6 +45,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Movie struct {
+		Actors      func(childComplexity int) int
 		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		Duration    func(childComplexity int) int
@@ -98,6 +99,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Movie.actors":
+		if e.complexity.Movie.Actors == nil {
+			break
+		}
+
+		return e.complexity.Movie.Actors(childComplexity), true
 
 	case "Movie.createdAt":
 		if e.complexity.Movie.CreatedAt == nil {
@@ -343,6 +351,7 @@ var sources = []*ast.Source{
   genres: String!
   duration: String!
   imageURL: String!
+  actors: String!
   createdAt: String!
   updatedAt: String!
 }
@@ -907,6 +916,50 @@ func (ec *executionContext) fieldContext_Movie_imageURL(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Movie_actors(ctx context.Context, field graphql.CollectedField, obj *Movie) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Movie_actors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Actors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Movie_actors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Movie",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Movie_createdAt(ctx context.Context, field graphql.CollectedField, obj *Movie) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Movie_createdAt(ctx, field)
 	if err != nil {
@@ -1050,6 +1103,8 @@ func (ec *executionContext) fieldContext_MoviesOverview_latestMovies(ctx context
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1116,6 +1171,8 @@ func (ec *executionContext) fieldContext_MoviesOverview_featuredMovies(ctx conte
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1182,6 +1239,8 @@ func (ec *executionContext) fieldContext_MoviesOverview_movieOfTheDay(ctx contex
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1248,6 +1307,8 @@ func (ec *executionContext) fieldContext_Query_searchMoviesByKeyword(ctx context
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1325,6 +1386,8 @@ func (ec *executionContext) fieldContext_Query_getMovies(ctx context.Context, fi
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1399,6 +1462,8 @@ func (ec *executionContext) fieldContext_Query_getMovieById(ctx context.Context,
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -1476,6 +1541,8 @@ func (ec *executionContext) fieldContext_Query_getRandomMovies(ctx context.Conte
 				return ec.fieldContext_Movie_duration(ctx, field)
 			case "imageURL":
 				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Movie_createdAt(ctx, field)
 			case "updatedAt":
@@ -3508,6 +3575,11 @@ func (ec *executionContext) _Movie(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "imageURL":
 			out.Values[i] = ec._Movie_imageURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "actors":
+			out.Values[i] = ec._Movie_actors(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

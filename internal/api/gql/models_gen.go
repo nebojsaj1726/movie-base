@@ -11,6 +11,7 @@ type Movie struct {
 	Genres      string `json:"genres"`
 	Duration    string `json:"duration"`
 	ImageURL    string `json:"imageURL"`
+	Actors      string `json:"actors"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }

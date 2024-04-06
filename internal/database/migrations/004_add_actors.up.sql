@@ -1,0 +1,5 @@
+ALTER TABLE movies
+ADD COLUMN actors TEXT;
+
+ALTER TABLE shows
+ADD COLUMN actors TEXT;

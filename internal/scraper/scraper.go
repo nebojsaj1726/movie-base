@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/nebojsaj1726/movie-base/config"
 )
@@ -22,6 +23,7 @@ type Movie struct {
 	Genres      []string
 	Duration    string
 	ImageURL    string
+	Actors      []string
 }
 
 func ScrapeMedia(mediaType string) ([]Movie, error) {
@@ -58,9 +60,9 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 			totalPagesStr := e.Text
 			re := regexp.MustCompile(`Page 1 of (\d+)`)
 			matches := re.FindStringSubmatch(totalPagesStr)
-		
+
 			var err error
-		
+
 			if len(matches) >= 2 {
 				totalPages, err = strconv.Atoi(matches[1])
 				if err != nil {
@@ -77,11 +79,10 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 			link := e.ChildAttr("a[href]", "href")
 			imageURL := e.ChildAttr("img.lozad", "data-src")
 
-
 			movie := Movie{
-				Title: title,
-				Rate: rate,
-				Year: year,
+				Title:    title,
+				Rate:     rate,
+				Year:     year,
 				ImageURL: imageURL,
 			}
 
@@ -91,13 +92,25 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 				genres := extractGenres(e)
 				duration := e.ChildText(".movie-description__duration span")
 				description := e.ChildText(".description")
-		
-				mu.Lock()
-				defer mu.Unlock()
-		
+
 				movie.Genres = genres
 				movie.Duration = duration
 				movie.Description = description
+
+				castCollector := e.DOM.NextAllFiltered(".cast")
+
+				var actors []string
+				castCollector.Find(".actors__cards .actor__name").Each(func(_ int, el *goquery.Selection) {
+					actorName := strings.TrimSpace(el.Text())
+					actors = append(actors, actorName)
+				})
+
+				mu.Lock()
+				defer mu.Unlock()
+
+				actorsStr := strings.Join(actors, ", ")
+
+				movie.Actors = []string{actorsStr}
 
 				movies = append(movies, movie)
 			})
@@ -106,7 +119,7 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 			if err != nil {
 				errorCh <- fmt.Errorf("error visiting page %s: %v", link, err)
 				return
-			}	
+			}
 		})
 
 		pageCollector.OnError(func(r *colly.Response, err error) {
@@ -125,7 +138,7 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 		go func(page int) {
 			defer wg.Done()
 
-			err := listCollector.Visit(fmt.Sprintf(baseURL + mediaPath + "/page/%d?&r=5", page))
+			err := listCollector.Visit(fmt.Sprintf(baseURL+mediaPath+"/page/%d?&r=5", page))
 			if err != nil {
 				log.Printf("Error visiting page %d: %v\n", page, err)
 			}
@@ -135,13 +148,13 @@ func ScrapeMedia(mediaType string) ([]Movie, error) {
 	}
 
 	go func() {
-        wg.Wait()
-        close(errorCh)
-    }()
+		wg.Wait()
+		close(errorCh)
+	}()
 
-    for err := range errorCh {
-        log.Println(err)
-    }
+	for err := range errorCh {
+		log.Println(err)
+	}
 
 	wg.Wait()
 

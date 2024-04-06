@@ -53,6 +53,7 @@ func (r *Repository) CreateMovies(movies []scraper.Movie) error {
 			Duration:    movie.Duration,
 			ImageURL:    movie.ImageURL,
 			Genres:      strings.Join(movie.Genres, ", "),
+			Actors:      strings.Join(movie.Actors, ", "),
 		}
 
 		if err := r.DB.Create(&newMovie).Error; err != nil {
@@ -72,6 +73,7 @@ func (r *Repository) CreateShows(shows []scraper.Movie) error {
 			Description: show.Description,
 			ImageURL:    show.ImageURL,
 			Genres:      strings.Join(show.Genres, ", "),
+			Actors:      strings.Join(show.Actors, ", "),
 		}
 
 		if err := r.DB.Create(&newShow).Error; err != nil {

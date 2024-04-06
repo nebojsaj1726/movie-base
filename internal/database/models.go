@@ -3,16 +3,17 @@ package database
 import "time"
 
 type Movie struct {
-    ID          uint      `gorm:"primary_key" json:"id"`
-    Title       string    `gorm:"not null" json:"title"`
-    Rate        string    `json:"rate"`
-    Year        string    `json:"year"`
-    Description string    `json:"description"`
-    Genres      string    `json:"genres"`
-    Duration    string    `json:"duration"`
+	ID          uint      `gorm:"primary_key" json:"id"`
+	Title       string    `gorm:"not null" json:"title"`
+	Rate        string    `json:"rate"`
+	Year        string    `json:"year"`
+	Description string    `json:"description"`
+	Genres      string    `json:"genres"`
+	Duration    string    `json:"duration"`
 	ImageURL    string    `json:"image_url"`
-    CreatedAt   time.Time `json:"created_at"`
-    UpdatedAt   time.Time `json:"updated_at"`
+	Actors      string    `json:"actors"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (Movie) TableName() string {
@@ -20,18 +21,18 @@ func (Movie) TableName() string {
 }
 
 type Show struct {
-    ID          uint      `gorm:"primary_key" json:"id"`
-    Title       string    `gorm:"not null" json:"title"`
-    Rate        string    `json:"rate"`
-    Year        string    `json:"year"`
-    Description string    `json:"description"`
-    Genres      string    `json:"genres"`
-    ImageURL    string    `json:"image_url"`
-    CreatedAt   time.Time `json:"created_at"`
-    UpdatedAt   time.Time `json:"updated_at"`
+	ID          uint      `gorm:"primary_key" json:"id"`
+	Title       string    `gorm:"not null" json:"title"`
+	Rate        string    `json:"rate"`
+	Year        string    `json:"year"`
+	Description string    `json:"description"`
+	Genres      string    `json:"genres"`
+	ImageURL    string    `json:"image_url"`
+	Actors      string    `json:"actors"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (Show) TableName() string {
-    return "shows"
+	return "shows"
 }
-

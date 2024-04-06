@@ -31,6 +31,7 @@ func dbMovieToGraphQL(dbMovie *database.Movie) *Movie {
 		Genres:      dbMovie.Genres,
 		Duration:    dbMovie.Duration,
 		ImageURL:    dbMovie.ImageURL,
+		Actors:      dbMovie.Actors,
 		CreatedAt:   dbMovie.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   dbMovie.UpdatedAt.Format(time.RFC3339),
 	}

@@ -29,11 +29,12 @@ func main() {
 			Genres:      dbMovie.Genres,
 			Duration:    dbMovie.Duration,
 			ImageURL:    dbMovie.ImageURL,
+			Actors:      dbMovie.Actors,
 		}
 		scraperMovies = append(scraperMovies, scraperMovie)
 	}
 
-    if err := repo.CreateMovies(scraperMovies); err != nil {
+	if err := repo.CreateMovies(scraperMovies); err != nil {
 		log.Fatalf("Error creating movies in the database: %v", err)
 	}
 
@@ -43,23 +44,22 @@ func main() {
 	}
 
 	var scraperShows []scraper.Movie
-		for _, dbMovie := range shows {
-			scraperMovie := scraper.Movie{
-				Title:       dbMovie.Title,
-				Rate:        dbMovie.Rate,
-				Year:        dbMovie.Year,
-				Description: dbMovie.Description,
-				Genres:      dbMovie.Genres,
-				ImageURL:    dbMovie.ImageURL,
-			}
-			scraperShows = append(scraperShows, scraperMovie)
+	for _, dbMovie := range shows {
+		scraperMovie := scraper.Movie{
+			Title:       dbMovie.Title,
+			Rate:        dbMovie.Rate,
+			Year:        dbMovie.Year,
+			Description: dbMovie.Description,
+			Genres:      dbMovie.Genres,
+			ImageURL:    dbMovie.ImageURL,
+			Actors:      dbMovie.Actors,
 		}
+		scraperShows = append(scraperShows, scraperMovie)
+	}
 
 	if err := repo.CreateShows(scraperShows); err != nil {
 		log.Fatalf("Error creating shows in the database: %v", err)
 	}
-
-
 
 	log.Printf("Scraping and database insertion completed. Total movies: %d, Total shows: %d\n", len(scraperMovies), len(scraperShows))
 }
