@@ -45,6 +45,7 @@ export const useRandomMoviesQuery = ({
             genres
             duration
             imageURL
+            actors
           }
         }
       `
@@ -77,6 +78,7 @@ export const useMovieByIdQuery = (id: string): UseQueryResult<Movie, Error> => {
             genres
             duration
             imageURL
+            actors
           }
         }
       `
@@ -149,6 +151,7 @@ export const useGetMoviesQuery = (
             genres
             duration
             imageURL
+            actors
           }
         }
       `
@@ -183,6 +186,7 @@ export const useGetHomePageMovies = (): UseQueryResult<HomePageData, Error> => {
               genres
               duration
               imageURL
+              actors
             }
             featuredMovies {
               id
@@ -193,6 +197,7 @@ export const useGetHomePageMovies = (): UseQueryResult<HomePageData, Error> => {
               genres
               duration
               imageURL
+              actors
             }
             movieOfTheDay {
               id
@@ -203,6 +208,7 @@ export const useGetHomePageMovies = (): UseQueryResult<HomePageData, Error> => {
               genres
               duration
               imageURL
+              actors
             }
           }
         }

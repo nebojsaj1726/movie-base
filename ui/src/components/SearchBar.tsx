@@ -10,6 +10,10 @@ export const SearchBar = () => {
     setSearchInput(event.target.value)
   }
 
+  const clearSearchInput = () => {
+    setSearchInput("")
+  }
+
   return (
     <div className="flex-grow max-w-xl relative">
       <input
@@ -20,7 +24,10 @@ export const SearchBar = () => {
         className="bg-slate-light w-full text-gray-200 px-4 py-2 rounded-md focus:outline-none focus:bg-gray-700"
       />
       {debouncedSearchInput && (
-        <SearchResults searchInput={debouncedSearchInput} />
+        <SearchResults
+          searchInput={debouncedSearchInput}
+          onLinkClick={clearSearchInput}
+        />
       )}
     </div>
   )

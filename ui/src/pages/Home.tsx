@@ -1,39 +1,16 @@
-import { Link } from "react-router-dom"
-import logo from "assets/logo.svg"
-import { SearchBar } from "components/SearchBar"
 import { useGetHomePageMovies } from "hooks/useMovies"
 import { MovieList } from "components/MovieList"
+import { Layout } from "components/Layout"
 
 export const Home = () => {
   const { data, isLoading, error } = useGetHomePageMovies()
 
   return (
-    <div>
-      <header className="bg-dark-midnight text-gray-200 px-6 md:px-12 py-6 flex flex-col md:flex-row gap-6 justify-between md:text-lg">
-        <div className="flex items-center space-x-3">
-          <div>
-            <Link to="/">
-              <img src={logo} alt="Logo" className="h-8 mr-2 rounded-md" />
-            </Link>
-          </div>
-          <nav>
-            <ul className="flex space-x-3 font-medium">
-              <li>
-                <Link to="/movies" className="hover:text-white">
-                  Movies
-                </Link>
-              </li>
-              <li>
-                <Link to="/shows" className="hover:text-white">
-                  Shows
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <SearchBar />
-      </header>
+    <Layout>
       <div className="bg-deep-blue pb-8">
+        <p className="text-gray-200 px-8 md:px-16 pt-10 text-xl">
+          Discover and explore. Welcome to our movie hub!
+        </p>
         <MovieList
           title="Latest movies"
           movies={data?.latestMovies}
@@ -52,7 +29,8 @@ export const Home = () => {
           isLoading={isLoading}
           error={error}
         />
+        <p className="text-gray-200 px-8 md:px-16">* Ratings are IMDb.</p>
       </div>
-    </div>
+    </Layout>
   )
 }

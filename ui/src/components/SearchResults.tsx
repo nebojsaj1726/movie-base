@@ -3,9 +3,13 @@ import { Link } from "react-router-dom"
 
 interface SearchResultsProps {
   searchInput: string
+  onLinkClick: () => void
 }
 
-export const SearchResults = ({ searchInput }: SearchResultsProps) => {
+export const SearchResults = ({
+  searchInput,
+  onLinkClick,
+}: SearchResultsProps) => {
   const { data, error } = useSearchMoviesByKeywordQuery(searchInput)
 
   return (
@@ -16,8 +20,8 @@ export const SearchResults = ({ searchInput }: SearchResultsProps) => {
         )}
         {data &&
           data.map((movie) => (
-            <li key={movie.id} className="px-4 py-4 border-b border-gray-200">
-              <Link to={`/movies/${movie.id}`}>
+            <li key={movie.id} className="px-4 py-4 border-b border-gray-500">
+              <Link to={`/movies/${movie.id}`} onClick={onLinkClick}>
                 <p className="font-semibold">
                   {`${movie.title} (${movie.year})`}
                 </p>

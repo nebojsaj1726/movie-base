@@ -70,7 +70,8 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
           {movie.description}
         </p>
         <p className="text-sm">{movie.genres}</p>
-        <p className="text-sm mb-2">{movie.duration}</p>
+        <p className="text-sm">{movie.duration}</p>
+        <p className="text-sm overflow-hidden max-h-10">{`Cast: ${movie.actors}`}</p>
       </div>
     </div>
   )

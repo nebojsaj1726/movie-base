@@ -7,6 +7,7 @@ export interface Movie {
   genres: string
   duration: string
   imageURL: string
+  actors: string
 }
 
 export interface HomePageData {
