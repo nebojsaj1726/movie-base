@@ -8,9 +8,9 @@ export const Home = () => {
   return (
     <Layout>
       <div className="bg-deep-blue pb-8">
-        <p className="text-gray-200 px-8 md:px-16 pt-10 text-xl">
+        <h1 className="text-gray-200 px-8 md:px-16 pt-12 text-3xl text-center">
           Discover and explore. Welcome to our movie hub!
-        </p>
+        </h1>
         <MovieList
           title="Latest movies"
           movies={data?.latestMovies}
@@ -29,7 +29,7 @@ export const Home = () => {
           isLoading={isLoading}
           error={error}
         />
-        <p className="text-gray-200 px-8 md:px-16">* Ratings are IMDb.</p>
+        <p className="text-gray-200 mt-6 px-8 md:px-16">* Ratings are IMDb.</p>
       </div>
     </Layout>
   )

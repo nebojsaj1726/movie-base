@@ -35,7 +35,7 @@ func (s *MovieService) SearchMoviesByKeyword(keyword string) ([]*database.Movie,
 	return s.Repo.SearchMoviesByKeyword(keyword)
 }
 
-func (s *MovieService) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, error) {
+func (s *MovieService) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, int, error) {
 	return s.Repo.GetMovies(limit, offset, genreRange, year, rating)
 }
 
@@ -55,7 +55,7 @@ func (s *MovieService) GetLatestMovies() ([]*database.Movie, error) {
 
 	limit := 30
 	offset := 0
-	movies, err := s.Repo.GetMovies(&limit, &offset, nil, nil, nil)
+	movies, _, err := s.Repo.GetMovies(&limit, &offset, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s *MovieService) GetFeaturedMovies() ([]*database.Movie, error) {
 	limit := 300
 	offset := 0
 	rating := 7.0
-	movies, err := s.Repo.GetMovies(&limit, &offset, nil, nil, &rating)
+	movies, _, err := s.Repo.GetMovies(&limit, &offset, nil, nil, &rating)
 	if err != nil {
 		return nil, err
 	}

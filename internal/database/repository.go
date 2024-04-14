@@ -95,16 +95,22 @@ func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, error) {
 	return movies, nil
 }
 
-func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
+func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, int, error) {
 	cacheKey := fmt.Sprintf("GetMovies_%v_%v_%v_%v_%v", *limit, *offset, genreRange, nilCheck(year), nilCheck(rating))
 
-	var cachedMovies []*Movie
-	if result, err := r.RedisClient.GetCache(context.Background(), cacheKey, &cachedMovies); err == nil {
-		return *result.(*[]*Movie), nil
+	type CachedMovies struct {
+		Movies     []*Movie
+		TotalCount int
+	}
+
+	var cachedData CachedMovies
+	if _, err := r.RedisClient.GetCache(context.Background(), cacheKey, &cachedData); err == nil {
+		return cachedData.Movies, cachedData.TotalCount, nil
 	}
 
 	var movies []*Movie
-	query := r.DB.Limit(*limit).Offset(*offset)
+	var totalCount int
+	query := r.DB.Model(&Movie{})
 
 	if len(genreRange) > 0 {
 		query = query.Where("genres IN (?)", genreRange)
@@ -115,16 +121,23 @@ func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *in
 	if rating != nil {
 		query = query.Where("rate >= ?", *rating)
 	}
-	if err := query.Find(&movies).Error; err != nil {
+
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, fmt.Errorf("error counting movies: %v", err)
+	}
+
+	if err := query.Limit(*limit).Offset(*offset).Find(&movies).Error; err != nil {
 		if !gorm.IsRecordNotFoundError(err) {
-			return nil, fmt.Errorf("error retrieving movies: %v", err)
+			return nil, 0, fmt.Errorf("error retrieving movies: %v", err)
 		}
 	}
-	if err := r.RedisClient.SetCache(context.Background(), cacheKey, movies, cacheExpiration); err != nil {
+
+	cachedData = CachedMovies{Movies: movies, TotalCount: totalCount}
+	if err := r.RedisClient.SetCache(context.Background(), cacheKey, cachedData, cacheExpiration); err != nil {
 		log.Println("Error caching result:", err)
 	}
 
-	return movies, nil
+	return movies, totalCount, nil
 }
 
 func (r *Repository) GetMovieByID(id uint) (*Movie, error) {

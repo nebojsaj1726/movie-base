@@ -18,6 +18,11 @@ type MoviesOverview {
   movieOfTheDay: Movie!
 }
 
+type GetMoviesResponse {
+  movies: [Movie]!
+  totalCount: Int!
+}
+
 type Query {
   searchMoviesByKeyword(keyword: String!): [Movie]!
   getMovies(
@@ -26,7 +31,7 @@ type Query {
     genre: [String!]
     year: Int
     rating: Float
-  ): [Movie]!
+  ): GetMoviesResponse!
   getMovieById(id: String!): Movie
   getRandomMovies(
     count: Int = 1

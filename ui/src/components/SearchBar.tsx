@@ -21,7 +21,8 @@ export const SearchBar = () => {
         placeholder="Search"
         value={searchInput}
         onChange={handleInputChange}
-        className="bg-slate-light w-full text-gray-200 px-4 py-2 rounded-md focus:outline-none focus:bg-gray-700"
+        className="bg-slate-light w-full text-gray-200 px-4 py-2 rounded-md focus:outline-none 
+        focus:bg-gray-700"
       />
       {debouncedSearchInput && (
         <SearchResults

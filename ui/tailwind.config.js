@@ -8,6 +8,9 @@ export default {
         "slate-light": "#182c3e",
         "deep-blue": "#0f2b3c",
       },
+      width: {
+        "17/100": "17%",
+      },
     },
   },
   plugins: [],

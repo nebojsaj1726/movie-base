@@ -55,13 +55,16 @@ func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword strin
 	return dbMoviesToGraphQL(dbMovies), nil
 }
 
-func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
-	dbMovies, err := r.MovieService.GetMovies(limit, offset, genreRange, year, rating)
+func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) (*GetMoviesResponse, error) {
+	dbMovies, totalCount, err := r.MovieService.GetMovies(limit, offset, genreRange, year, rating)
 	if err != nil {
 		return nil, err
 	}
 
-	return dbMoviesToGraphQL(dbMovies), nil
+	return &GetMoviesResponse{
+		Movies:     dbMoviesToGraphQL(dbMovies),
+		TotalCount: totalCount,
+	}, nil
 }
 
 func (r *queryResolver) GetMovieByID(ctx context.Context, id string) (*Movie, error) {

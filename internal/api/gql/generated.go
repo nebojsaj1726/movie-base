@@ -44,6 +44,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	GetMoviesResponse struct {
+		Movies     func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
 	Movie struct {
 		Actors      func(childComplexity int) int
 		CreatedAt   func(childComplexity int) int
@@ -75,7 +80,7 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	SearchMoviesByKeyword(ctx context.Context, keyword string) ([]*Movie, error)
-	GetMovies(ctx context.Context, limit *int, offset *int, genre []string, year *int, rating *float64) ([]*Movie, error)
+	GetMovies(ctx context.Context, limit *int, offset *int, genre []string, year *int, rating *float64) (*GetMoviesResponse, error)
 	GetMovieByID(ctx context.Context, id string) (*Movie, error)
 	GetRandomMovies(ctx context.Context, count *int, genre []string, year *int, rating *float64) ([]*Movie, error)
 	GetHomePageData(ctx context.Context) (*MoviesOverview, error)
@@ -99,6 +104,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "GetMoviesResponse.movies":
+		if e.complexity.GetMoviesResponse.Movies == nil {
+			break
+		}
+
+		return e.complexity.GetMoviesResponse.Movies(childComplexity), true
+
+	case "GetMoviesResponse.totalCount":
+		if e.complexity.GetMoviesResponse.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.GetMoviesResponse.TotalCount(childComplexity), true
 
 	case "Movie.actors":
 		if e.complexity.Movie.Actors == nil {
@@ -362,6 +381,11 @@ type MoviesOverview {
   movieOfTheDay: Movie!
 }
 
+type GetMoviesResponse {
+  movies: [Movie]!
+  totalCount: Int!
+}
+
 type Query {
   searchMoviesByKeyword(keyword: String!): [Movie]!
   getMovies(
@@ -370,7 +394,7 @@ type Query {
     genre: [String!]
     year: Int
     rating: Float
-  ): [Movie]!
+  ): GetMoviesResponse!
   getMovieById(id: String!): Movie
   getRandomMovies(
     count: Int = 1
@@ -563,6 +587,118 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _GetMoviesResponse_movies(ctx context.Context, field graphql.CollectedField, obj *GetMoviesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetMoviesResponse_movies(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Movies, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Movie)
+	fc.Result = res
+	return ec.marshalNMovie2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐMovie(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetMoviesResponse_movies(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetMoviesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Movie_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Movie_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Movie_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Movie_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Movie_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Movie_genres(ctx, field)
+			case "duration":
+				return ec.fieldContext_Movie_duration(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Movie_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Movie_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Movie", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetMoviesResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *GetMoviesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetMoviesResponse_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetMoviesResponse_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetMoviesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Movie_id(ctx context.Context, field graphql.CollectedField, obj *Movie) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Movie_id(ctx, field)
@@ -1357,9 +1493,9 @@ func (ec *executionContext) _Query_getMovies(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Movie)
+	res := resTmp.(*GetMoviesResponse)
 	fc.Result = res
-	return ec.marshalNMovie2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐMovie(ctx, field.Selections, res)
+	return ec.marshalNGetMoviesResponse2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetMoviesResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getMovies(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1370,30 +1506,12 @@ func (ec *executionContext) fieldContext_Query_getMovies(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Movie_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Movie_title(ctx, field)
-			case "rate":
-				return ec.fieldContext_Movie_rate(ctx, field)
-			case "year":
-				return ec.fieldContext_Movie_year(ctx, field)
-			case "description":
-				return ec.fieldContext_Movie_description(ctx, field)
-			case "genres":
-				return ec.fieldContext_Movie_genres(ctx, field)
-			case "duration":
-				return ec.fieldContext_Movie_duration(ctx, field)
-			case "imageURL":
-				return ec.fieldContext_Movie_imageURL(ctx, field)
-			case "actors":
-				return ec.fieldContext_Movie_actors(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Movie_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Movie_updatedAt(ctx, field)
+			case "movies":
+				return ec.fieldContext_GetMoviesResponse_movies(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_GetMoviesResponse_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Movie", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GetMoviesResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -3527,6 +3645,50 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** object.gotpl ****************************
 
+var getMoviesResponseImplementors = []string{"GetMoviesResponse"}
+
+func (ec *executionContext) _GetMoviesResponse(ctx context.Context, sel ast.SelectionSet, obj *GetMoviesResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getMoviesResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetMoviesResponse")
+		case "movies":
+			out.Values[i] = ec._GetMoviesResponse_movies(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._GetMoviesResponse_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var movieImplementors = []string{"Movie"}
 
 func (ec *executionContext) _Movie(ctx context.Context, sel ast.SelectionSet, obj *Movie) graphql.Marshaler {
@@ -4163,6 +4325,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNGetMoviesResponse2githubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetMoviesResponse(ctx context.Context, sel ast.SelectionSet, v GetMoviesResponse) graphql.Marshaler {
+	return ec._GetMoviesResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGetMoviesResponse2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetMoviesResponse(ctx context.Context, sel ast.SelectionSet, v *GetMoviesResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GetMoviesResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4170,6 +4346,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

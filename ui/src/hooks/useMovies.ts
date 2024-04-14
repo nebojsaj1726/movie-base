@@ -118,14 +118,23 @@ export const useSearchMoviesByKeywordQuery = (
   return useQuery(options)
 }
 
-export const useGetMoviesQuery = (
-  limit?: number,
-  offset?: number,
-  genre?: string[],
-  year?: number,
+export const useGetMoviesQuery = ({
+  limit,
+  offset,
+  genre,
+  year,
+  rating,
+}: {
+  limit?: number
+  offset?: number
+  genre?: string[]
+  year?: number
   rating?: number
-): UseQueryResult<Movie[], Error> => {
-  const options: UseQueryOptions<Movie[], Error> = {
+}): UseQueryResult<{ movies: Movie[]; totalCount: number }, Error> => {
+  const options: UseQueryOptions<
+    { movies: Movie[]; totalCount: number },
+    Error
+  > = {
     queryKey: ["getMovies", limit, offset, genre, year, rating],
     queryFn: async () => {
       const query = gql`
@@ -143,20 +152,25 @@ export const useGetMoviesQuery = (
             year: $year
             rating: $rating
           ) {
-            id
-            title
-            rate
-            year
-            description
-            genres
-            duration
-            imageURL
-            actors
+            movies {
+              id
+              title
+              rate
+              year
+              description
+              genres
+              duration
+              imageURL
+              actors
+            }
+            totalCount
           }
         }
       `
 
-      const data = await client.request<{ getMovies: Movie[] }>(query, {
+      const data = await client.request<{
+        getMovies: { movies: Movie[]; totalCount: number }
+      }>(query, {
         limit,
         offset,
         genre,

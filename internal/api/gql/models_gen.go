@@ -2,6 +2,11 @@
 
 package gql
 
+type GetMoviesResponse struct {
+	Movies     []*Movie `json:"movies"`
+	TotalCount int      `json:"totalCount"`
+}
+
 type Movie struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
