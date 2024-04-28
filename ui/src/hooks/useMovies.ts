@@ -15,11 +15,13 @@ export const useRandomMoviesQuery = ({
   genre,
   year,
   rating,
+  enabled,
 }: {
   count?: number
   genre?: string[]
   year?: number
   rating?: number
+  enabled?: boolean
 }): UseQueryResult<Movie[], Error> => {
   const options: UseQueryOptions<Movie[], Error> = {
     queryKey: ["randomMovies", count, genre, year, rating],
@@ -58,6 +60,7 @@ export const useRandomMoviesQuery = ({
       })
       return data.getRandomMovies
     },
+    enabled,
   }
 
   return useQuery(options)

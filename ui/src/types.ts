@@ -15,3 +15,13 @@ export interface HomePageData {
   featuredMovies: Movie[]
   movieOfTheDay: Movie
 }
+
+interface FiltersType<T extends string | string[]> {
+  year?: number
+  rating?: number
+  genre?: T
+}
+
+export type Filters = FiltersType<string[]>
+
+export type FormFilters = FiltersType<string>

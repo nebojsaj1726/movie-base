@@ -51,11 +51,16 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
     >
       <div className="bg-slate-light rounded-lg shadow-md text-gray-200">
         <Link to={`/movies/${movie.id}`}>
-          <img
-            src={movie.imageURL || posterImage}
-            alt={movie.title}
-            className="rounded-t-lg object-contain w-full h-full"
-          />
+          <div
+            className="bg-gray-800 rounded-t-lg relative"
+            style={{ paddingBottom: "150%" }}
+          >
+            <img
+              src={movie.imageURL || posterImage}
+              alt={movie.title}
+              className="rounded-t-lg object-contain w-full h-full absolute"
+            />
+          </div>
           <div className="px-2 py-1">
             <div className="flex gap-3 text-gray-300">
               <p>{movie.year}</p>
