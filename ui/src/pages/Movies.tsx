@@ -6,7 +6,48 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Filters, FormFilters } from "types"
 import { genreOptions, ratingOptions, yearOptions } from "utils/options"
-import Select from "react-select"
+import Select, { StylesConfig } from "react-select"
+
+type OptionType = { value: string | number; label: string }
+
+const selectStyles: StylesConfig<OptionType, false> = {
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: "#182c3e",
+    borderColor: "#9999",
+    borderWidth: "2px",
+  }),
+  option: (provided) => ({
+    ...provided,
+    backgroundColor: "#182c3e",
+    color: "#cccccc",
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#cccccc",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#cccccc",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: "#182c3e",
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    "::-webkit-scrollbar": {
+      width: "4px",
+      height: "0px",
+    },
+    "::-webkit-scrollbar-track": {
+      background: "#182c3e",
+    },
+    "::-webkit-scrollbar-thumb": {
+      background: "#999999",
+    },
+  }),
+}
 
 export const Movies = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -23,6 +64,7 @@ export const Movies = () => {
     data: randomMoviesData,
     isLoading: randomMoviesLoading,
     error: randomMoviesError,
+    refetch,
   } = useRandomMoviesQuery({
     enabled: showRandom,
     ...filters,
@@ -61,6 +103,7 @@ export const Movies = () => {
     setShowRandom(true)
     const formData = getFormData()
     updateFilters(formData)
+    showRandom && refetch()
   }
 
   return (
@@ -80,6 +123,7 @@ export const Movies = () => {
                 }}
                 className="w-full sm:w-48"
                 placeholder="Years"
+                styles={selectStyles}
               />
               <Select
                 {...register("rating")}
@@ -89,6 +133,7 @@ export const Movies = () => {
                 }}
                 className="w-full sm:w-48"
                 placeholder="Ratings"
+                styles={selectStyles}
               />
               <Select
                 {...register("genre")}
@@ -98,6 +143,7 @@ export const Movies = () => {
                 }}
                 className="w-full sm:w-48"
                 placeholder="Genres"
+                styles={selectStyles}
               />
             </div>
             <div className="flex gap-4">

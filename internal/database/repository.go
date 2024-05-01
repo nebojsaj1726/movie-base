@@ -113,7 +113,17 @@ func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *in
 	query := r.DB.Model(&Movie{})
 
 	if len(genreRange) > 0 {
-		query = query.Where("genres IN (?)", genreRange)
+		genreParams := make([]interface{}, len(genreRange))
+		genreQuery := "("
+		for i, genre := range genreRange {
+			if i > 0 {
+				genreQuery += " OR "
+			}
+			genreQuery += "genres LIKE ?"
+			genreParams[i] = "%" + genre + "%"
+		}
+		genreQuery += ")"
+		query = query.Where(genreQuery, genreParams...)
 	}
 	if year != nil {
 		query = query.Where("year = ?", *year)
@@ -158,7 +168,17 @@ func (r *Repository) GetRandomMovies(count *int, genreRange []string, year *int,
 	query := r.DB
 
 	if len(genreRange) > 0 {
-		query = query.Where("genres IN (?)", genreRange)
+		genreParams := make([]interface{}, len(genreRange))
+		genreQuery := "("
+		for i, genre := range genreRange {
+			if i > 0 {
+				genreQuery += " OR "
+			}
+			genreQuery += "genres LIKE ?"
+			genreParams[i] = "%" + genre + "%"
+		}
+		genreQuery += ")"
+		query = query.Where(genreQuery, genreParams...)
 	}
 	if year != nil {
 		query = query.Where("year = ?", *year)

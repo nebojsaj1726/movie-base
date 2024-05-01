@@ -9,7 +9,9 @@ export const Home = () => {
     <Layout>
       <div className="bg-deep-blue pb-8">
         <h1 className="text-gray-200 px-8 md:px-16 pt-12 text-3xl text-center">
-          Discover and explore. Welcome to our movie hub!
+          <span className="text-blue-500">Discover</span> and{" "}
+          <span className="text-yellow-500">explore</span>. Welcome to our movie
+          hub!
         </h1>
         <MovieList
           title="Latest movies"
