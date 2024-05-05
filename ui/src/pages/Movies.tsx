@@ -111,9 +111,9 @@ export const Movies = () => {
       <div className="bg-deep-blue min-h-screen">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="px-8 md:px-24 pt-8 pb-2"
+          className="px-8 md:px-24 pt-12 pb-7"
         >
-          <div className="flex flex-wrap justify-between gap-y-6 max-w-6xl m-auto">
+          <div className="flex flex-wrap justify-between gap-y-6 xl:px-5 m-auto">
             <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <Select
                 {...register("year")}
@@ -121,7 +121,7 @@ export const Movies = () => {
                 onChange={(selectedOption) => {
                   setValue("year", selectedOption?.value)
                 }}
-                className="w-full sm:w-48"
+                className="w-full sm:w-52"
                 placeholder="Years"
                 styles={selectStyles}
               />
@@ -131,7 +131,7 @@ export const Movies = () => {
                 onChange={(selectedOption) => {
                   setValue("rating", selectedOption?.value)
                 }}
-                className="w-full sm:w-48"
+                className="w-full sm:w-52"
                 placeholder="Ratings"
                 styles={selectStyles}
               />
@@ -141,7 +141,7 @@ export const Movies = () => {
                 onChange={(selectedOption) => {
                   setValue("genre", selectedOption?.value)
                 }}
-                className="w-full sm:w-48"
+                className="w-full sm:w-52"
                 placeholder="Genres"
                 styles={selectStyles}
               />

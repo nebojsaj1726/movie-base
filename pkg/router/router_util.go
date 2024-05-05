@@ -15,10 +15,6 @@ import (
 func NewRouter(resolver *gql.Resolver) http.Handler {
 	r := mux.NewRouter()
 
-	r.Handle("/", http.FileServer(http.Dir("ui/dist")))
-	assetsFs := http.FileServer(http.Dir("ui/dist/assets"))
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", assetsFs))
-
 	gqlHandler := handler.New(gql.NewExecutableSchema(gql.Config{
 		Resolvers:  resolver,
 		Directives: gql.DirectiveRoot{},
@@ -30,6 +26,12 @@ func NewRouter(resolver *gql.Resolver) http.Handler {
 
 	r.Handle("/playground", playground.Handler("GraphQL Playground", "/query"))
 	r.Handle("/query", gqlHandler)
+
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("ui/dist/assets"))))
+
+	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "ui/dist/index.html")
+	})
 
 	handlerWithCors := cors.AllowAll().Handler(r)
 
