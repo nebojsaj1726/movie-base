@@ -28,6 +28,9 @@ func NewRouter(resolver *gql.Resolver) http.Handler {
 	r.Handle("/query", gqlHandler)
 
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("ui/dist/assets"))))
+	r.Path("/favicon.png").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "ui/dist/favicon.png")
+	}))
 
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "ui/dist/index.html")

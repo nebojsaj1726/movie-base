@@ -21,5 +21,12 @@ go.work
 *.env
 
 # Build output
-*/ui/dist/
+/ui/dist/
+
+# Ignore backups
+/backups/*
+
+/internal/scraper/scraper.go
+
+cloudbuild.yaml
 

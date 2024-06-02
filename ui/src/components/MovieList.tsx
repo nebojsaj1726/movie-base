@@ -18,9 +18,7 @@ export const MovieList = ({
 }: MovieListProps) => (
   <div className="px-8 md:px-16 py-6">
     {title && (
-      <h2 className="text-2xl font-semibold mt-2 mb-10 text-gray-200">
-        {title}
-      </h2>
+      <h2 className="text-2xl font-semibold mb-10 text-gray-200">{title}</h2>
     )}
     <div
       className={`flex flex-wrap gap-8 justify-center ${
