@@ -15,10 +15,10 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ## Preview
 
-![Screenshot 1](screenshots/ss-1.png)
-![Screenshot 2](screenshots/ss-2.png)
-![Screenshot 3](screenshots/ss-3.png)
-![Screenshot 3](screenshots/ss-4.png)
+![Screenshot 1](screenshots/ss-1.png){: width="400"}
+![Screenshot 2](screenshots/ss-2.png){: width="400"}
+![Screenshot 3](screenshots/ss-3.png){: width="400"}
+![Screenshot 3](screenshots/ss-4.png){: width="400"}
 
 ## Note
 
