@@ -15,10 +15,8 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ## Preview
 
-<img src="screenshots/screenshot1.png" width="400">
-<img src="screenshots/screenshot2.png" width="400">
-<img src="screenshots/screenshot3.png" width="400">
-<img src="screenshots/screenshot4.png" width="400">
+![Screenshot 1](screenshots/screenshot1.png)
+![Screenshot 2](screenshots/screenshot4.png)
 
 ## Note
 
