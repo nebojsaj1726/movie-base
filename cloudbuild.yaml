@@ -1,0 +1,5 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "${CONTAINER_REGISTRY_URL}/server-image", "."]
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "${CONTAINER_REGISTRY_URL}/server-image"]

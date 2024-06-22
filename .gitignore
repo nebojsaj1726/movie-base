@@ -23,10 +23,15 @@ go.work
 # Build output
 /ui/dist/
 
+# Ignore node_modules
+/ui/node_modules/
+
 # Ignore backups
 /backups/*
 
 /internal/scraper/scraper.go
 
-cloudbuild.yaml
+# Ignore k8 config
+k8/config.yaml
+k8/app/app-deployment.yaml
 
