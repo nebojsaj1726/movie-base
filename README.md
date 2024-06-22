@@ -15,7 +15,10 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ## Preview
 
-![Demo GIF](preview.gif)
+<img src="screenshots/screenshot1.png" width="400">
+<img src="screenshots/screenshot2.png" width="400">
+<img src="screenshots/screenshot3.png" width="400">
+<img src="screenshots/screenshot4.png" width="400">
 
 ## Note
 
