@@ -15,8 +15,8 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ## Preview
 
-![Screenshot 1](screenshots/screenshot1.png)
-![Screenshot 2](screenshots/screenshot4.png)
+![Screenshot 1](screenshots/ss-1.png)
+![Screenshot 2](screenshots/ss-4.png)
 
 ## Note
 
