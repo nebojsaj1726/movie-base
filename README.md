@@ -15,7 +15,7 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ## Preview
 
-(path/to/your-demo.gif)
+(preview.gif)
 
 ## Note
 
