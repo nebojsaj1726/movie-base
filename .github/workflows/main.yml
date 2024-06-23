@@ -19,4 +19,4 @@ jobs:
         run: go fmt ./...
 
       - name: Run make test
-        run: make test
+        run: go test ./tests
