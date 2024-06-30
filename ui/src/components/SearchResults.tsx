@@ -19,13 +19,26 @@ export const SearchResults = ({
           <div className="p-4 text-red-600">Error: {error.message}</div>
         )}
         {data &&
-          data.map((movie) => (
+          data.movies &&
+          data.movies.map((movie) => (
             <li key={movie.id} className="px-4 py-4 border-b border-gray-500">
               <Link to={`/movies/${movie.id}`} onClick={onLinkClick}>
                 <p className="font-semibold">
                   {`${movie.title} (${movie.year})`}
                 </p>
                 <div className="text-sm">{movie.genres}</div>
+              </Link>
+            </li>
+          ))}
+        {data &&
+          data.shows &&
+          data.shows.map((show) => (
+            <li key={show.id} className="px-4 py-4 border-b border-gray-500">
+              <Link to={`/shows/${show.id}`} onClick={onLinkClick}>
+                <p className="font-semibold">
+                  {`${show.title} (${show.year})`}
+                </p>
+                <div className="text-sm">{show.genres}</div>
               </Link>
             </li>
           ))}

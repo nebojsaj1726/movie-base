@@ -1,11 +1,14 @@
-export interface Movie {
+export interface Movie extends Show {
+  duration: string
+}
+
+export interface Show {
   id: string
   title: string
   rate: string
   year: string
   description: string
   genres: string
-  duration: string
   imageURL: string
   actors: string
 }
@@ -25,3 +28,8 @@ interface FiltersType<T extends string | string[]> {
 export type Filters = FiltersType<string[]>
 
 export type FormFilters = FiltersType<string>
+
+export interface SearchResults {
+  movies: Movie[]
+  shows: Show[]
+}

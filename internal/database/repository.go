@@ -84,15 +84,23 @@ func (r *Repository) CreateShows(shows []scraper.Movie) error {
 	return nil
 }
 
-func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, error) {
+func (r *Repository) SearchMoviesByKeyword(keyword string) ([]*Movie, []*Show, error) {
 	var movies []*Movie
-	if err := r.DB.Where("title ILIKE ?", "%"+keyword+"%").Limit(15).Find(&movies).Error; err != nil {
+	var shows []*Show
+
+	if err := r.DB.Where("title ILIKE ?", "%"+keyword+"%").Limit(8).Find(&movies).Error; err != nil {
 		if !gorm.IsRecordNotFoundError(err) {
-			return nil, fmt.Errorf("error searching movies by keyword: %v", err)
+			return nil, nil, fmt.Errorf("error searching movies by keyword: %v", err)
 		}
 	}
 
-	return movies, nil
+	if err := r.DB.Where("title ILIKE ?", "%"+keyword+"%").Limit(7).Find(&shows).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, nil, fmt.Errorf("error searching shows by keyword: %v", err)
+		}
+	}
+
+	return movies, shows, nil
 }
 
 func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*Movie, int, error) {
@@ -150,6 +158,61 @@ func (r *Repository) GetMovies(limit, offset *int, genreRange []string, year *in
 	return movies, totalCount, nil
 }
 
+func (r *Repository) GetShows(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*Show, int, error) {
+	cacheKey := fmt.Sprintf("GetShows_%v_%v_%v_%v_%v", *limit, *offset, genreRange, nilCheck(year), nilCheck(rating))
+
+	type CachedShows struct {
+		Shows      []*Show
+		TotalCount int
+	}
+
+	var cachedData CachedShows
+	if _, err := r.RedisClient.GetCache(context.Background(), cacheKey, &cachedData); err == nil {
+		return cachedData.Shows, cachedData.TotalCount, nil
+	}
+
+	var shows []*Show
+	var totalCount int
+	query := r.DB.Model(&Show{})
+
+	if len(genreRange) > 0 {
+		genreParams := make([]interface{}, len(genreRange))
+		genreQuery := "("
+		for i, genre := range genreRange {
+			if i > 0 {
+				genreQuery += " OR "
+			}
+			genreQuery += "genres LIKE ?"
+			genreParams[i] = "%" + genre + "%"
+		}
+		genreQuery += ")"
+		query = query.Where(genreQuery, genreParams...)
+	}
+	if year != nil {
+		query = query.Where("year = ?", *year)
+	}
+	if rating != nil {
+		query = query.Where("rate >= ?", *rating)
+	}
+
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, fmt.Errorf("error counting shows: %v", err)
+	}
+
+	if err := query.Limit(*limit).Offset(*offset).Find(&shows).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, 0, fmt.Errorf("error retrieving shows: %v", err)
+		}
+	}
+
+	cachedData = CachedShows{Shows: shows, TotalCount: totalCount}
+	if err := r.RedisClient.SetCache(context.Background(), cacheKey, cachedData, cacheExpiration); err != nil {
+		log.Println("Error caching result:", err)
+	}
+
+	return shows, totalCount, nil
+}
+
 func (r *Repository) GetMovieByID(id uint) (*Movie, error) {
 	var movie Movie
 
@@ -161,6 +224,19 @@ func (r *Repository) GetMovieByID(id uint) (*Movie, error) {
 	}
 
 	return &movie, nil
+}
+
+func (r *Repository) GetShowByID(id uint) (*Show, error) {
+	var show Show
+
+	if err := r.DB.First(&show, id).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, fmt.Errorf("error retrieving show by ID: %v", err)
+		}
+		return nil, nil
+	}
+
+	return &show, nil
 }
 
 func (r *Repository) GetRandomMovies(count *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
@@ -192,6 +268,37 @@ func (r *Repository) GetRandomMovies(count *int, genreRange []string, year *int,
 	}
 
 	return movies, nil
+}
+
+func (r *Repository) GetRandomShows(count *int, genreRange []string, year *int, rating *float64) ([]*Show, error) {
+	var shows []*Show
+	query := r.DB
+
+	if len(genreRange) > 0 {
+		genreParams := make([]interface{}, len(genreRange))
+		genreQuery := "("
+		for i, genre := range genreRange {
+			if i > 0 {
+				genreQuery += " OR "
+			}
+			genreQuery += "genres LIKE ?"
+			genreParams[i] = "%" + genre + "%"
+		}
+		genreQuery += ")"
+		query = query.Where(genreQuery, genreParams...)
+	}
+	if year != nil {
+		query = query.Where("year = ?", *year)
+	}
+	if rating != nil {
+		query = query.Where("rate >= ?", *rating)
+	}
+
+	if err := query.Order("RANDOM()").Limit(*count).Find(&shows).Error; err != nil {
+		return nil, fmt.Errorf("error retrieving random shows: %v", err)
+	}
+
+	return shows, nil
 }
 
 func nilCheck(v interface{}) interface{} {

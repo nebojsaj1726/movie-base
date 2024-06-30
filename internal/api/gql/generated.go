@@ -49,6 +49,11 @@ type ComplexityRoot struct {
 		TotalCount func(childComplexity int) int
 	}
 
+	GetShowsResponse struct {
+		Shows      func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
 	Movie struct {
 		Actors      func(childComplexity int) int
 		CreatedAt   func(childComplexity int) int
@@ -74,16 +79,40 @@ type ComplexityRoot struct {
 		GetMovieByID          func(childComplexity int, id string) int
 		GetMovies             func(childComplexity int, limit *int, offset *int, genre []string, year *int, rating *float64) int
 		GetRandomMovies       func(childComplexity int, count *int, genre []string, year *int, rating *float64) int
+		GetRandomShows        func(childComplexity int, count *int, genre []string, year *int, rating *float64) int
+		GetShowByID           func(childComplexity int, id string) int
+		GetShows              func(childComplexity int, limit *int, offset *int, genre []string, year *int, rating *float64) int
 		SearchMoviesByKeyword func(childComplexity int, keyword string) int
+	}
+
+	SearchResults struct {
+		Movies func(childComplexity int) int
+		Shows  func(childComplexity int) int
+	}
+
+	Show struct {
+		Actors      func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		Genres      func(childComplexity int) int
+		ID          func(childComplexity int) int
+		ImageURL    func(childComplexity int) int
+		Rate        func(childComplexity int) int
+		Title       func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		Year        func(childComplexity int) int
 	}
 }
 
 type QueryResolver interface {
-	SearchMoviesByKeyword(ctx context.Context, keyword string) ([]*Movie, error)
+	SearchMoviesByKeyword(ctx context.Context, keyword string) (*SearchResults, error)
 	GetMovies(ctx context.Context, limit *int, offset *int, genre []string, year *int, rating *float64) (*GetMoviesResponse, error)
 	GetMovieByID(ctx context.Context, id string) (*Movie, error)
 	GetRandomMovies(ctx context.Context, count *int, genre []string, year *int, rating *float64) ([]*Movie, error)
 	GetHomePageData(ctx context.Context) (*MoviesOverview, error)
+	GetShows(ctx context.Context, limit *int, offset *int, genre []string, year *int, rating *float64) (*GetShowsResponse, error)
+	GetShowByID(ctx context.Context, id string) (*Show, error)
+	GetRandomShows(ctx context.Context, count *int, genre []string, year *int, rating *float64) ([]*Show, error)
 }
 
 type executableSchema struct {
@@ -118,6 +147,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GetMoviesResponse.TotalCount(childComplexity), true
+
+	case "GetShowsResponse.shows":
+		if e.complexity.GetShowsResponse.Shows == nil {
+			break
+		}
+
+		return e.complexity.GetShowsResponse.Shows(childComplexity), true
+
+	case "GetShowsResponse.totalCount":
+		if e.complexity.GetShowsResponse.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.GetShowsResponse.TotalCount(childComplexity), true
 
 	case "Movie.actors":
 		if e.complexity.Movie.Actors == nil {
@@ -260,6 +303,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetRandomMovies(childComplexity, args["count"].(*int), args["genre"].([]string), args["year"].(*int), args["rating"].(*float64)), true
 
+	case "Query.getRandomShows":
+		if e.complexity.Query.GetRandomShows == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getRandomShows_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetRandomShows(childComplexity, args["count"].(*int), args["genre"].([]string), args["year"].(*int), args["rating"].(*float64)), true
+
+	case "Query.getShowById":
+		if e.complexity.Query.GetShowByID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getShowById_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetShowByID(childComplexity, args["id"].(string)), true
+
+	case "Query.getShows":
+		if e.complexity.Query.GetShows == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getShows_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetShows(childComplexity, args["limit"].(*int), args["offset"].(*int), args["genre"].([]string), args["year"].(*int), args["rating"].(*float64)), true
+
 	case "Query.searchMoviesByKeyword":
 		if e.complexity.Query.SearchMoviesByKeyword == nil {
 			break
@@ -271,6 +350,90 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.SearchMoviesByKeyword(childComplexity, args["keyword"].(string)), true
+
+	case "SearchResults.movies":
+		if e.complexity.SearchResults.Movies == nil {
+			break
+		}
+
+		return e.complexity.SearchResults.Movies(childComplexity), true
+
+	case "SearchResults.shows":
+		if e.complexity.SearchResults.Shows == nil {
+			break
+		}
+
+		return e.complexity.SearchResults.Shows(childComplexity), true
+
+	case "Show.actors":
+		if e.complexity.Show.Actors == nil {
+			break
+		}
+
+		return e.complexity.Show.Actors(childComplexity), true
+
+	case "Show.createdAt":
+		if e.complexity.Show.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Show.CreatedAt(childComplexity), true
+
+	case "Show.description":
+		if e.complexity.Show.Description == nil {
+			break
+		}
+
+		return e.complexity.Show.Description(childComplexity), true
+
+	case "Show.genres":
+		if e.complexity.Show.Genres == nil {
+			break
+		}
+
+		return e.complexity.Show.Genres(childComplexity), true
+
+	case "Show.id":
+		if e.complexity.Show.ID == nil {
+			break
+		}
+
+		return e.complexity.Show.ID(childComplexity), true
+
+	case "Show.imageURL":
+		if e.complexity.Show.ImageURL == nil {
+			break
+		}
+
+		return e.complexity.Show.ImageURL(childComplexity), true
+
+	case "Show.rate":
+		if e.complexity.Show.Rate == nil {
+			break
+		}
+
+		return e.complexity.Show.Rate(childComplexity), true
+
+	case "Show.title":
+		if e.complexity.Show.Title == nil {
+			break
+		}
+
+		return e.complexity.Show.Title(childComplexity), true
+
+	case "Show.updatedAt":
+		if e.complexity.Show.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Show.UpdatedAt(childComplexity), true
+
+	case "Show.year":
+		if e.complexity.Show.Year == nil {
+			break
+		}
+
+		return e.complexity.Show.Year(childComplexity), true
 
 	}
 	return 0, false
@@ -375,6 +538,19 @@ var sources = []*ast.Source{
   updatedAt: String!
 }
 
+type Show {
+  id: ID!
+  title: String!
+  rate: String!
+  year: String!
+  description: String!
+  genres: String!
+  imageURL: String!
+  actors: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
 type MoviesOverview {
   latestMovies: [Movie]!
   featuredMovies: [Movie]!
@@ -386,8 +562,18 @@ type GetMoviesResponse {
   totalCount: Int!
 }
 
+type GetShowsResponse {
+  shows: [Show]!
+  totalCount: Int!
+}
+
+type SearchResults {
+  movies: [Movie]!
+  shows: [Show]!
+}
+
 type Query {
-  searchMoviesByKeyword(keyword: String!): [Movie]!
+  searchMoviesByKeyword(keyword: String!): SearchResults!
   getMovies(
     limit: Int = 20
     offset: Int = 0
@@ -403,6 +589,20 @@ type Query {
     rating: Float
   ): [Movie]!
   getHomePageData: MoviesOverview!
+  getShows(
+    limit: Int = 20
+    offset: Int = 0
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): GetShowsResponse!
+  getShowById(id: String!): Show
+  getRandomShows(
+    count: Int = 1
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): [Show]!
 }
 `, BuiltIn: false},
 }
@@ -532,6 +732,114 @@ func (ec *executionContext) field_Query_getRandomMovies_args(ctx context.Context
 		}
 	}
 	args["rating"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getRandomShows_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int
+	if tmp, ok := rawArgs["count"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("count"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["count"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["genre"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("genre"))
+		arg1, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["genre"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["year"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["year"] = arg2
+	var arg3 *float64
+	if tmp, ok := rawArgs["rating"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rating"))
+		arg3, err = ec.unmarshalOFloat2ᚖfloat64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rating"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getShowById_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getShows_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg1
+	var arg2 []string
+	if tmp, ok := rawArgs["genre"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("genre"))
+		arg2, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["genre"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["year"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["year"] = arg3
+	var arg4 *float64
+	if tmp, ok := rawArgs["rating"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rating"))
+		arg4, err = ec.unmarshalOFloat2ᚖfloat64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["rating"] = arg4
 	return args, nil
 }
 
@@ -690,6 +998,116 @@ func (ec *executionContext) _GetMoviesResponse_totalCount(ctx context.Context, f
 func (ec *executionContext) fieldContext_GetMoviesResponse_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GetMoviesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetShowsResponse_shows(ctx context.Context, field graphql.CollectedField, obj *GetShowsResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetShowsResponse_shows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Shows, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Show)
+	fc.Result = res
+	return ec.marshalNShow2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetShowsResponse_shows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetShowsResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Show_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Show_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Show_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Show_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Show_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Show_genres(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Show_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Show_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Show_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Show_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Show", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetShowsResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *GetShowsResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetShowsResponse_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetShowsResponse_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetShowsResponse",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1414,9 +1832,9 @@ func (ec *executionContext) _Query_searchMoviesByKeyword(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Movie)
+	res := resTmp.(*SearchResults)
 	fc.Result = res
-	return ec.marshalNMovie2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐMovie(ctx, field.Selections, res)
+	return ec.marshalNSearchResults2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐSearchResults(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_searchMoviesByKeyword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1427,30 +1845,12 @@ func (ec *executionContext) fieldContext_Query_searchMoviesByKeyword(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Movie_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Movie_title(ctx, field)
-			case "rate":
-				return ec.fieldContext_Movie_rate(ctx, field)
-			case "year":
-				return ec.fieldContext_Movie_year(ctx, field)
-			case "description":
-				return ec.fieldContext_Movie_description(ctx, field)
-			case "genres":
-				return ec.fieldContext_Movie_genres(ctx, field)
-			case "duration":
-				return ec.fieldContext_Movie_duration(ctx, field)
-			case "imageURL":
-				return ec.fieldContext_Movie_imageURL(ctx, field)
-			case "actors":
-				return ec.fieldContext_Movie_actors(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Movie_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Movie_updatedAt(ctx, field)
+			case "movies":
+				return ec.fieldContext_SearchResults_movies(ctx, field)
+			case "shows":
+				return ec.fieldContext_SearchResults_shows(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Movie", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SearchResults", field.Name)
 		},
 	}
 	defer func() {
@@ -1735,6 +2135,218 @@ func (ec *executionContext) fieldContext_Query_getHomePageData(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getShows(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getShows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetShows(rctx, fc.Args["limit"].(*int), fc.Args["offset"].(*int), fc.Args["genre"].([]string), fc.Args["year"].(*int), fc.Args["rating"].(*float64))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*GetShowsResponse)
+	fc.Result = res
+	return ec.marshalNGetShowsResponse2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetShowsResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getShows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "shows":
+				return ec.fieldContext_GetShowsResponse_shows(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_GetShowsResponse_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GetShowsResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getShows_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getShowById(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getShowById(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetShowByID(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Show)
+	fc.Result = res
+	return ec.marshalOShow2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getShowById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Show_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Show_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Show_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Show_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Show_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Show_genres(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Show_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Show_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Show_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Show_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Show", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getShowById_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getRandomShows(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getRandomShows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetRandomShows(rctx, fc.Args["count"].(*int), fc.Args["genre"].([]string), fc.Args["year"].(*int), fc.Args["rating"].(*float64))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Show)
+	fc.Result = res
+	return ec.marshalNShow2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getRandomShows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Show_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Show_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Show_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Show_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Show_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Show_genres(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Show_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Show_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Show_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Show_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Show", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getRandomShows_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -1859,6 +2471,580 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SearchResults_movies(ctx context.Context, field graphql.CollectedField, obj *SearchResults) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SearchResults_movies(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Movies, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Movie)
+	fc.Result = res
+	return ec.marshalNMovie2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐMovie(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SearchResults_movies(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SearchResults",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Movie_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Movie_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Movie_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Movie_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Movie_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Movie_genres(ctx, field)
+			case "duration":
+				return ec.fieldContext_Movie_duration(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Movie_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Movie_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Movie_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Movie_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Movie", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SearchResults_shows(ctx context.Context, field graphql.CollectedField, obj *SearchResults) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SearchResults_shows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Shows, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Show)
+	fc.Result = res
+	return ec.marshalNShow2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SearchResults_shows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SearchResults",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Show_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Show_title(ctx, field)
+			case "rate":
+				return ec.fieldContext_Show_rate(ctx, field)
+			case "year":
+				return ec.fieldContext_Show_year(ctx, field)
+			case "description":
+				return ec.fieldContext_Show_description(ctx, field)
+			case "genres":
+				return ec.fieldContext_Show_genres(ctx, field)
+			case "imageURL":
+				return ec.fieldContext_Show_imageURL(ctx, field)
+			case "actors":
+				return ec.fieldContext_Show_actors(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Show_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Show_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Show", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_id(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_title(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_rate(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_rate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_rate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_year(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_year(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Year, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_year(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_description(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_genres(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_genres(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Genres, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_genres(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_imageURL(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_imageURL(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_imageURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_actors(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_actors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Actors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_actors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_createdAt(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Show_updatedAt(ctx context.Context, field graphql.CollectedField, obj *Show) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Show_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Show_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Show",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3689,6 +4875,50 @@ func (ec *executionContext) _GetMoviesResponse(ctx context.Context, sel ast.Sele
 	return out
 }
 
+var getShowsResponseImplementors = []string{"GetShowsResponse"}
+
+func (ec *executionContext) _GetShowsResponse(ctx context.Context, sel ast.SelectionSet, obj *GetShowsResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getShowsResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetShowsResponse")
+		case "shows":
+			out.Values[i] = ec._GetShowsResponse_shows(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._GetShowsResponse_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var movieImplementors = []string{"Movie"}
 
 func (ec *executionContext) _Movie(ctx context.Context, sel ast.SelectionSet, obj *Movie) graphql.Marshaler {
@@ -3953,6 +5183,69 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getShows":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getShows(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getShowById":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getShowById(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getRandomShows":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getRandomShows(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -3961,6 +5254,134 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var searchResultsImplementors = []string{"SearchResults"}
+
+func (ec *executionContext) _SearchResults(ctx context.Context, sel ast.SelectionSet, obj *SearchResults) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, searchResultsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SearchResults")
+		case "movies":
+			out.Values[i] = ec._SearchResults_movies(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "shows":
+			out.Values[i] = ec._SearchResults_shows(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var showImplementors = []string{"Show"}
+
+func (ec *executionContext) _Show(ctx context.Context, sel ast.SelectionSet, obj *Show) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, showImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Show")
+		case "id":
+			out.Values[i] = ec._Show_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Show_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "rate":
+			out.Values[i] = ec._Show_rate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "year":
+			out.Values[i] = ec._Show_year(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._Show_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "genres":
+			out.Values[i] = ec._Show_genres(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "imageURL":
+			out.Values[i] = ec._Show_imageURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "actors":
+			out.Values[i] = ec._Show_actors(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._Show_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Show_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4339,6 +5760,20 @@ func (ec *executionContext) marshalNGetMoviesResponse2ᚖgithubᚗcomᚋnebojsaj
 	return ec._GetMoviesResponse(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNGetShowsResponse2githubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetShowsResponse(ctx context.Context, sel ast.SelectionSet, v GetShowsResponse) graphql.Marshaler {
+	return ec._GetShowsResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGetShowsResponse2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐGetShowsResponse(ctx context.Context, sel ast.SelectionSet, v *GetShowsResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GetShowsResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4429,6 +5864,58 @@ func (ec *executionContext) marshalNMoviesOverview2ᚖgithubᚗcomᚋnebojsaj172
 		return graphql.Null
 	}
 	return ec._MoviesOverview(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSearchResults2githubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐSearchResults(ctx context.Context, sel ast.SelectionSet, v SearchResults) graphql.Marshaler {
+	return ec._SearchResults(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSearchResults2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐSearchResults(ctx context.Context, sel ast.SelectionSet, v *SearchResults) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SearchResults(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNShow2ᚕᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx context.Context, sel ast.SelectionSet, v []*Show) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOShow2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4762,6 +6249,13 @@ func (ec *executionContext) marshalOMovie2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovie
 		return graphql.Null
 	}
 	return ec._Movie(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOShow2ᚖgithubᚗcomᚋnebojsaj1726ᚋmovieᚑbaseᚋinternalᚋapiᚋgqlᚐShow(ctx context.Context, sel ast.SelectionSet, v *Show) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Show(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

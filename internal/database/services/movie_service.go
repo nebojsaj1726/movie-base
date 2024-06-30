@@ -12,7 +12,9 @@ import (
 
 const (
 	latestMoviesCacheKey   = "latest_movies"
+	latestShowsCacheKey    = "latest_shows"
 	featuredMoviesCacheKey = "featured_movies"
+	featuredShowsCacheKey  = "featured_shows"
 	movieOfTheDayCacheKey  = "movie_of_the_day"
 	cacheExpiration        = 24 * time.Hour
 )
@@ -31,7 +33,7 @@ func NewMovieService(repo *database.Repository) *MovieService {
 	return &MovieService{Repo: repo, RedisCache: redisClient}
 }
 
-func (s *MovieService) SearchMoviesByKeyword(keyword string) ([]*database.Movie, error) {
+func (s *MovieService) SearchMoviesByKeyword(keyword string) ([]*database.Movie, []*database.Show, error) {
 	return s.Repo.SearchMoviesByKeyword(keyword)
 }
 
@@ -39,12 +41,24 @@ func (s *MovieService) GetMovies(limit, offset *int, genreRange []string, year *
 	return s.Repo.GetMovies(limit, offset, genreRange, year, rating)
 }
 
+func (s *MovieService) GetShows(limit, offset *int, genreRange []string, year *int, rating *float64) ([]*database.Show, int, error) {
+	return s.Repo.GetShows(limit, offset, genreRange, year, rating)
+}
+
 func (s *MovieService) GetMovieByID(id uint) (*database.Movie, error) {
 	return s.Repo.GetMovieByID(id)
 }
 
+func (s *MovieService) GetShowByID(id uint) (*database.Show, error) {
+	return s.Repo.GetShowByID(id)
+}
+
 func (s *MovieService) GetRandomMovies(count *int, genreRange []string, year *int, rating *float64) ([]*database.Movie, error) {
 	return s.Repo.GetRandomMovies(count, genreRange, year, rating)
+}
+
+func (s *MovieService) GetRandomShows(count *int, genreRange []string, year *int, rating *float64) ([]*database.Show, error) {
+	return s.Repo.GetRandomShows(count, genreRange, year, rating)
 }
 
 func (s *MovieService) GetLatestMovies() ([]*database.Movie, error) {

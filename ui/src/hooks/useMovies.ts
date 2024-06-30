@@ -5,7 +5,7 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query"
 import { gql, GraphQLClient } from "graphql-request"
-import { HomePageData, Movie } from "types"
+import { HomePageData, Movie, SearchResults, Show } from "types"
 
 const endpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT
 const client = new GraphQLClient(endpoint)
@@ -66,6 +66,61 @@ export const useRandomMoviesQuery = ({
   return useQuery(options)
 }
 
+export const useRandomShowsQuery = ({
+  count,
+  genre,
+  year,
+  rating,
+  enabled,
+}: {
+  count?: number
+  genre?: string[]
+  year?: number
+  rating?: number
+  enabled?: boolean
+}): UseQueryResult<Show[], Error> => {
+  const options: UseQueryOptions<Show[], Error> = {
+    queryKey: ["randomShows", count, genre, year, rating],
+    queryFn: async () => {
+      const query = gql`
+        query GetRandomShows(
+          $count: Int
+          $genre: [String!]
+          $year: Int
+          $rating: Float
+        ) {
+          getRandomShows(
+            count: $count
+            genre: $genre
+            year: $year
+            rating: $rating
+          ) {
+            id
+            title
+            rate
+            year
+            description
+            genres
+            imageURL
+            actors
+          }
+        }
+      `
+
+      const data = await client.request<{ getRandomShows: Show[] }>(query, {
+        count,
+        genre,
+        year,
+        rating,
+      })
+      return data.getRandomShows
+    },
+    enabled,
+  }
+
+  return useQuery(options)
+}
+
 export const useMovieByIdQuery = (id: string): UseQueryResult<Movie, Error> => {
   const options: UseQueryOptions<Movie, Error> = {
     queryKey: ["movieById", id],
@@ -92,27 +147,59 @@ export const useMovieByIdQuery = (id: string): UseQueryResult<Movie, Error> => {
   return useQuery(options)
 }
 
+export const useShowByIdQuery = (id: string): UseQueryResult<Show, Error> => {
+  const options: UseQueryOptions<Show, Error> = {
+    queryKey: ["showById", id],
+    queryFn: async () => {
+      const query = gql`
+        query GetShowById($id: String!) {
+          getShowById(id: $id) {
+            id
+            title
+            rate
+            year
+            description
+            genres
+            imageURL
+            actors
+          }
+        }
+      `
+      const data = await client.request<{ getShowById: Show }>(query, { id })
+      return data.getShowById
+    },
+  }
+  return useQuery(options)
+}
+
 export const useSearchMoviesByKeywordQuery = (
   keyword: string
-): UseQueryResult<Movie[], Error> => {
-  const options: UseQueryOptions<Movie[], Error> = {
+): UseQueryResult<SearchResults, Error> => {
+  const options: UseQueryOptions<SearchResults, Error> = {
     queryKey: ["searchMoviesByKeyword", keyword],
     queryFn: async () => {
       const query = gql`
         query SearchMoviesByKeyword($keyword: String!) {
           searchMoviesByKeyword(keyword: $keyword) {
-            id
-            title
-            year
-            genres
+            movies {
+              id
+              title
+              year
+              genres
+            }
+            shows {
+              id
+              title
+              year
+              genres
+            }
           }
         }
       `
 
-      const data = await client.request<{ searchMoviesByKeyword: Movie[] }>(
-        query,
-        { keyword }
-      )
+      const data = await client.request<{
+        searchMoviesByKeyword: SearchResults
+      }>(query, { keyword })
       return data.searchMoviesByKeyword
     },
     placeholderData: keepPreviousData,
@@ -183,6 +270,69 @@ export const useGetMoviesQuery = ({
       return data.getMovies
     },
   }
+
+  return useQuery(options)
+}
+
+export const useGetShowsQuery = ({
+  limit,
+  offset,
+  genre,
+  year,
+  rating,
+}: {
+  limit?: number
+  offset?: number
+  genre?: string[]
+  year?: number
+  rating?: number
+}): UseQueryResult<{ shows: Show[]; totalCount: number }, Error> => {
+  const options: UseQueryOptions<{ shows: Show[]; totalCount: number }, Error> =
+    {
+      queryKey: ["getShows", limit, offset, genre, year, rating],
+      queryFn: async () => {
+        const query = gql`
+          query GetShows(
+            $limit: Int
+            $offset: Int
+            $genre: [String!]
+            $year: Int
+            $rating: Float
+          ) {
+            getShows(
+              limit: $limit
+              offset: $offset
+              genre: $genre
+              year: $year
+              rating: $rating
+            ) {
+              shows {
+                id
+                title
+                rate
+                year
+                description
+                genres
+                imageURL
+                actors
+              }
+              totalCount
+            }
+          }
+        `
+
+        const data = await client.request<{
+          getShows: { shows: Show[]; totalCount: number }
+        }>(query, {
+          limit,
+          offset,
+          genre,
+          year,
+          rating,
+        })
+        return data.getShows
+      },
+    }
 
   return useQuery(options)
 }

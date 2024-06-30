@@ -7,6 +7,11 @@ type GetMoviesResponse struct {
 	TotalCount int      `json:"totalCount"`
 }
 
+type GetShowsResponse struct {
+	Shows      []*Show `json:"shows"`
+	TotalCount int     `json:"totalCount"`
+}
+
 type Movie struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
@@ -28,4 +33,22 @@ type MoviesOverview struct {
 }
 
 type Query struct {
+}
+
+type SearchResults struct {
+	Movies []*Movie `json:"movies"`
+	Shows  []*Show  `json:"shows"`
+}
+
+type Show struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Rate        string `json:"rate"`
+	Year        string `json:"year"`
+	Description string `json:"description"`
+	Genres      string `json:"genres"`
+	ImageURL    string `json:"imageURL"`
+	Actors      string `json:"actors"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
 }

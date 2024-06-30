@@ -1,11 +1,11 @@
 import { Layout } from "components/Layout"
-import { useMovieByIdQuery } from "hooks/useMovies"
+import { useShowByIdQuery } from "hooks/useMovies"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 
-export const Movie = () => {
+export const Show = () => {
   const { id } = useParams<{ id: string }>()
-  const { data, isLoading, error } = useMovieByIdQuery(id ?? "")
+  const { data, isLoading, error } = useShowByIdQuery(id ?? "")
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -36,7 +36,6 @@ export const Movie = () => {
                   {data.rate}
                 </p>
               </div>
-              <p className="mb-6">{data.duration}</p>
               <p className="mb-6">{data.description}</p>
               <p className="mb-2">Genres: {data.genres}</p>
               <p>Cast: {data.actors}</p>

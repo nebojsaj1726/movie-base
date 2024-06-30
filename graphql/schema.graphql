@@ -12,6 +12,19 @@ type Movie {
   updatedAt: String!
 }
 
+type Show {
+  id: ID!
+  title: String!
+  rate: String!
+  year: String!
+  description: String!
+  genres: String!
+  imageURL: String!
+  actors: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
 type MoviesOverview {
   latestMovies: [Movie]!
   featuredMovies: [Movie]!
@@ -23,8 +36,18 @@ type GetMoviesResponse {
   totalCount: Int!
 }
 
+type GetShowsResponse {
+  shows: [Show]!
+  totalCount: Int!
+}
+
+type SearchResults {
+  movies: [Movie]!
+  shows: [Show]!
+}
+
 type Query {
-  searchMoviesByKeyword(keyword: String!): [Movie]!
+  searchMoviesByKeyword(keyword: String!): SearchResults!
   getMovies(
     limit: Int = 20
     offset: Int = 0
@@ -40,4 +63,18 @@ type Query {
     rating: Float
   ): [Movie]!
   getHomePageData: MoviesOverview!
+  getShows(
+    limit: Int = 20
+    offset: Int = 0
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): GetShowsResponse!
+  getShowById(id: String!): Show
+  getRandomShows(
+    count: Int = 1
+    genre: [String!]
+    year: Int
+    rating: Float
+  ): [Show]!
 }

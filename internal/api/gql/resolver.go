@@ -37,6 +37,21 @@ func dbMovieToGraphQL(dbMovie *database.Movie) *Movie {
 	}
 }
 
+func dbShowToGraphQL(dbShow *database.Show) *Show {
+	return &Show{
+		ID:          strconv.FormatUint(uint64(dbShow.ID), 10),
+		Title:       dbShow.Title,
+		Rate:        dbShow.Rate,
+		Year:        dbShow.Year,
+		Description: dbShow.Description,
+		Genres:      dbShow.Genres,
+		ImageURL:    dbShow.ImageURL,
+		Actors:      dbShow.Actors,
+		CreatedAt:   dbShow.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   dbShow.UpdatedAt.Format(time.RFC3339),
+	}
+}
+
 func dbMoviesToGraphQL(dbMovies []*database.Movie) []*Movie {
 	var gqlMovies []*Movie
 	for _, dbMovie := range dbMovies {
@@ -46,13 +61,25 @@ func dbMoviesToGraphQL(dbMovies []*database.Movie) []*Movie {
 	return gqlMovies
 }
 
-func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword string) ([]*Movie, error) {
-	dbMovies, err := r.MovieService.SearchMoviesByKeyword(keyword)
+func dbShowsToGraphQL(dbShows []*database.Show) []*Show {
+	var gqlShows []*Show
+	for _, dbShow := range dbShows {
+		gqlShow := dbShowToGraphQL(dbShow)
+		gqlShows = append(gqlShows, gqlShow)
+	}
+	return gqlShows
+}
+
+func (r *queryResolver) SearchMoviesByKeyword(ctx context.Context, keyword string) (*SearchResults, error) {
+	dbMovies, dbShows, err := r.MovieService.SearchMoviesByKeyword(keyword)
 	if err != nil {
 		return nil, err
 	}
 
-	return dbMoviesToGraphQL(dbMovies), nil
+	return &SearchResults{
+		Movies: dbMoviesToGraphQL(dbMovies),
+		Shows:  dbShowsToGraphQL(dbShows),
+	}, nil
 }
 
 func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) (*GetMoviesResponse, error) {
@@ -63,6 +90,18 @@ func (r *queryResolver) GetMovies(ctx context.Context, limit *int, offset *int, 
 
 	return &GetMoviesResponse{
 		Movies:     dbMoviesToGraphQL(dbMovies),
+		TotalCount: totalCount,
+	}, nil
+}
+
+func (r *queryResolver) GetShows(ctx context.Context, limit *int, offset *int, genreRange []string, year *int, rating *float64) (*GetShowsResponse, error) {
+	dbShows, totalCount, err := r.MovieService.GetShows(limit, offset, genreRange, year, rating)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetShowsResponse{
+		Shows:      dbShowsToGraphQL(dbShows),
 		TotalCount: totalCount,
 	}, nil
 }
@@ -81,6 +120,20 @@ func (r *queryResolver) GetMovieByID(ctx context.Context, id string) (*Movie, er
 	return dbMovieToGraphQL(movie), nil
 }
 
+func (r *queryResolver) GetShowByID(ctx context.Context, id string) (*Show, error) {
+	showID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	show, err := r.MovieService.GetShowByID(uint(showID))
+	if err != nil {
+		return nil, err
+	}
+
+	return dbShowToGraphQL(show), nil
+}
+
 func (r *queryResolver) GetRandomMovies(ctx context.Context, count *int, genreRange []string, year *int, rating *float64) ([]*Movie, error) {
 	dbMovies, err := r.MovieService.GetRandomMovies(count, genreRange, year, rating)
 	if err != nil {
@@ -88,6 +141,15 @@ func (r *queryResolver) GetRandomMovies(ctx context.Context, count *int, genreRa
 	}
 
 	return dbMoviesToGraphQL(dbMovies), nil
+}
+
+func (r *queryResolver) GetRandomShows(ctx context.Context, count *int, genreRange []string, year *int, rating *float64) ([]*Show, error) {
+	dbShows, err := r.MovieService.GetRandomShows(count, genreRange, year, rating)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbShowsToGraphQL(dbShows), nil
 }
 
 func (r *queryResolver) GetHomePageData(ctx context.Context) (*MoviesOverview, error) {

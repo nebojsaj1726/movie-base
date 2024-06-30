@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { Movie } from "types"
+import { Movie, Show } from "types"
 import posterImage from "assets/poster.jpeg"
 
 interface MovieCardProps {
-  movie: Movie
+  movie: Movie | Show
+  randomMovie?: boolean
 }
 
-export const MovieCard = ({ movie }: MovieCardProps) => {
+export const MovieCard = ({ movie, randomMovie }: MovieCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const [isOnRight, setIsOnRight] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -44,13 +45,19 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
 
   return (
     <div
-      className="group relative w-full md:w-17/100"
+      className={`group relative w-full ${
+        randomMovie ? "md:w-21/100" : "md:w-17/100"
+      }`}
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="bg-slate-light rounded-lg shadow-md text-gray-200">
-        <Link to={`/movies/${movie.id}`}>
+        <Link
+          to={
+            "duration" in movie ? `/movies/${movie.id}` : `/shows/${movie.id}`
+          }
+        >
           <div
             className="bg-gray-800 rounded-t-lg relative"
             style={{ paddingBottom: "150%" }}
@@ -98,7 +105,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
           {movie.description}
         </p>
         <p className="text-sm">{movie.genres}</p>
-        <p className="text-sm">{movie.duration}</p>
+        {"duration" in movie && <p className="text-sm">{movie.duration}</p>}
         <p className="text-sm overflow-hidden max-h-10">{`Cast: ${movie.actors}`}</p>
       </div>
     </div>

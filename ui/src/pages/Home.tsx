@@ -7,8 +7,8 @@ export const Home = () => {
 
   return (
     <Layout>
-      <div className="bg-deep-blue pb-8">
-        <h1 className="text-gray-200 px-8 md:px-16 pt-12 text-3xl text-center">
+      <div className="bg-deep-blue pb-8 xl:px-14">
+        <h1 className="text-gray-200 px-4 sm:px-8 md:px-16 pt-10 text-3xl text-center leading-snug sm:leading-normal font-medium">
           <span className="text-blue-500">Discover</span> and{" "}
           <span className="text-yellow-500">explore</span>. Welcome to our movie
           hub!
