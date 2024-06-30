@@ -17,13 +17,9 @@ A live demo of the application is available [here](http://35.223.94.138:8080/)
 
 ![Screenshot 1](screenshots/ss-1.png)
 
-## Note
-
-The shows page is currently in development.
-
 ## Contributing
 
-Contributions are what make the open source community such an amazing place. Any contributions you make are **greatly appreciated**.
+Any contributions you make are **greatly appreciated**.
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
