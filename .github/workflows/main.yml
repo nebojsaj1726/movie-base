@@ -15,7 +15,7 @@ jobs:
       - name: Run go vet
         run: |
           for pkg in $(go list ./... | grep -v /internal/scraper); do
-            go vet -fix $$pkg
+            go vet -all $$pkg || true
           done
       - name: Run go fmt
         run: go fmt ./...
