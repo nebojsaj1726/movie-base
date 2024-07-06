@@ -1,5 +1,6 @@
 import { MovieCard } from "components/MovieCard"
 import { Movie, Show } from "types"
+import { Spinner } from "./Spinner"
 
 interface MovieListProps {
   title?: string
@@ -25,7 +26,7 @@ export const MovieList = ({
         theme === "center" ? "" : "md:justify-start"
       }`}
     >
-      {isLoading && <div className="text-gray-200">Loading...</div>}
+      {isLoading && <Spinner />}
       {error && <div className="text-red-600">Error: {error.message}</div>}
       {movies &&
         movies.map((movie) => (

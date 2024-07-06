@@ -1,4 +1,5 @@
 import { Layout } from "components/Layout"
+import { Spinner } from "components/Spinner"
 import { useMovieByIdQuery } from "hooks/useMovies"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
@@ -14,7 +15,7 @@ export const Movie = () => {
   return (
     <Layout>
       <div className="px-8 md:px-20 py-16 bg-deep-blue min-h-screen">
-        {isLoading && <div className="text-gray-200">Loading...</div>}
+        {isLoading && <Spinner />}
         {error && <div className="text-red-600">Error: {error.message}</div>}
         {data && (
           <div className="flex flex-col gap-10 md:flex-row">
