@@ -11,7 +11,7 @@ Movie Base is a web application built with Go and React. It provides an intuitiv
 
 ## Demo
 
-A live demo of the application is available [here](http://35.223.94.138:8080/)
+A live demo of the application is available [here](http://movies-23df5e8a.nip.io/)
 
 ## Preview
 
