@@ -9,10 +9,6 @@ Movie Base is a web application built with Go and React. It provides an intuitiv
 - **Random Movie Generator**: Get random movie suggestions based on specific parameters such as year, rating, and genre.
 - **Advanced Filtering**: Filter movies by various criteria including year, rating, genre, and more to find exactly what you're looking for.
 
-## Demo
-
-A live demo of the application is available [here](http://movies-23df5e8a.nip.io/)
-
 ## Preview
 
 ![Screenshot 1](screenshots/ss-1.png)
